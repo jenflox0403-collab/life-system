@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { uid } from '../../lib/uid.js'
 
 // 이 파일은 아침/저녁 루틴 카드 담당
 // items: [{id, name, minutes}] / checked: {id: true} 형태
@@ -25,7 +26,7 @@ export default function RoutineCard({ title, emoji, items, checked, onToggle, on
   }
 
   function addItem() {
-    onChangeItems([...items, { id: crypto.randomUUID(), name: '새 항목', minutes: 5 }])
+    onChangeItems([...items, { id: uid(), name: '새 항목', minutes: 5 }])
     setIsEditing(true)
   }
 

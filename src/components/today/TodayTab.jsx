@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { uid } from '../../lib/uid.js'
 import { useStoredState } from '../../hooks/useStoredState.js'
 import { todayKey, formatKorean } from '../../lib/date.js'
 import RoutineCard from './RoutineCard.jsx'
@@ -50,7 +51,7 @@ export default function TodayTab() {
   }
 
   function saveBlock(block) {
-    const id = block.id ?? crypto.randomUUID()
+    const id = block.id ?? uid()
     const rest = todayBlocks.filter((b) => b.id !== block.id)
     setAllBlocks({ ...allBlocks, [today]: [...rest, { ...block, id }] })
     setEditorState(null)
@@ -73,7 +74,7 @@ export default function TodayTab() {
     yesterday.setDate(yesterday.getDate() - 1)
     const yBlocks = allBlocks[todayKey(yesterday)] ?? []
     if (yBlocks.length === 0) return
-    const copied = yBlocks.map((b) => ({ ...b, id: crypto.randomUUID(), done: false, todoId: undefined }))
+    const copied = yBlocks.map((b) => ({ ...b, id: uid(), done: false, todoId: undefined }))
     setAllBlocks({ ...allBlocks, [today]: [...todayBlocks, ...copied] })
   }
 

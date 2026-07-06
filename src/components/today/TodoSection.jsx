@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { uid } from '../../lib/uid.js'
 
 // 이 파일은 "오늘 투두" 카드 담당
 // 우선순위 도트: 긴급+중요(빨강) / 중요(파랑) / 긴급(주황) / 둘 다 아님(회색)
@@ -18,7 +19,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
     event.preventDefault()
     const trimmed = text.trim()
     if (!trimmed) return
-    onChange([...todos, { id: crypto.randomUUID(), text: trimmed, urgent, important, done: false }])
+    onChange([...todos, { id: uid(), text: trimmed, urgent, important, done: false }])
     setText('')
     setUrgent(false)
     setImportant(false)

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { categoryColor, minutesToLabel } from '../../lib/categories.js'
 
-const PX_PER_10MIN = 9 // 10분 = 9px → 1시간 = 54px
+const ROW_H = 40 // 한 시간 행의 높이(px)
 
-// 이 파일은 10분 단위 타임블록 타임라인 담당
+// 이 파일은 타임블록 격자(종이 플래너 스타일) 담당
+// 왼쪽 세로줄 = 시간(6~24), 각 행 = 10분씩 6칸
 export default function TimeblockSection({
   blocks,
   dayStart,
@@ -14,30 +15,29 @@ export default function TimeblockSection({
   onCopyYesterday,
   hasYesterday,
 }) {
-  const timelineRef = useRef(null)
   const [now, setNow] = useState(() => new Date())
 
-  // 현재 시각 라인을 1분마다 갱신
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 60_000)
     return () => clearInterval(timer)
   }, [])
 
   const nowMinutes = now.getHours() * 60 + now.getMinutes()
-  const totalHeight = ((dayEnd - dayStart) / 10) * PX_PER_10MIN
   const hours = []
   for (let t = dayStart; t < dayEnd; t += 60) hours.push(t)
 
   const doneCount = blocks.filter((b) => b.done).length
   const rate = blocks.length === 0 ? null : Math.round((doneCount / blocks.length) * 100)
 
-  /** 빈 곳 탭 → 그 시각으로 새 블록 */
-  function handleTimelineClick(event) {
-    if (event.target !== timelineRef.current) return
-    const rect = timelineRef.current.getBoundingClientRect()
-    const offsetY = event.clientY - rect.top
-    const minute = dayStart + Math.floor(offsetY / PX_PER_10MIN) * 10
-    onCreateAt(Math.min(minute, dayEnd - 10))
+  /** 특정 시각(10분 칸)을 덮는 블록 찾기 */
+  function blockAt(minute) {
+    return blocks.find((b) => b.start <= minute && minute < b.end)
+  }
+
+  function handleCellClick(minute) {
+    const covered = blockAt(minute)
+    if (covered) onEditBlock(covered)
+    else onCreateAt(minute)
   }
 
   return (
@@ -58,82 +58,94 @@ export default function TimeblockSection({
           </button>
         )}
       </div>
-      <p className="mb-3 text-xs text-[var(--color-muted)]">빈 시간을 탭하면 블록이 생겨요</p>
+      <p className="mb-3 text-xs text-[var(--color-muted)]">
+        빈 칸을 탭하면 새 블록, 색칠된 칸을 탭하면 수정 · 한 칸 = 10분
+      </p>
 
-      <div className="flex">
-        {/* 시간 눈금 */}
-        <div className="relative w-11 shrink-0" style={{ height: totalHeight }}>
-          {hours.map((t) => (
-            <span
-              key={t}
-              className="absolute -translate-y-1/2 text-[11px] text-[var(--color-muted)]"
-              style={{ top: ((t - dayStart) / 10) * PX_PER_10MIN }}
-            >
-              {minutesToLabel(t)}
-            </span>
-          ))}
-        </div>
+      <div className="overflow-hidden rounded-xl border border-black/15">
+        {hours.map((rowStart) => {
+          const rowEnd = rowStart + 60
+          const isNowRow = nowMinutes >= rowStart && nowMinutes < rowEnd
+          // 이 행에 걸쳐 있는 블록 조각들 (제목은 블록이 시작하는 행에만 표시)
+          const segments = blocks
+            .filter((b) => b.start < rowEnd && b.end > rowStart)
+            .map((b) => ({
+              block: b,
+              left: (Math.max(b.start, rowStart) - rowStart) / 60,
+              width: (Math.min(b.end, rowEnd) - Math.max(b.start, rowStart)) / 60,
+              isHead: b.start >= rowStart,
+            }))
 
-        {/* 타임라인 본체 */}
-        <div
-          ref={timelineRef}
-          onClick={handleTimelineClick}
-          className="relative flex-1 cursor-pointer rounded-xl bg-black/[0.02]"
-          style={{ height: totalHeight }}
-        >
-          {/* 시간 구분선 */}
-          {hours.map((t) => (
-            <div
-              key={t}
-              className="pointer-events-none absolute inset-x-0 border-t border-black/[0.05]"
-              style={{ top: ((t - dayStart) / 10) * PX_PER_10MIN }}
-            />
-          ))}
-
-          {/* 블록들 */}
-          {blocks.map((block) => {
-            const top = ((block.start - dayStart) / 10) * PX_PER_10MIN
-            const height = ((block.end - block.start) / 10) * PX_PER_10MIN
-            return (
-              <div
-                key={block.id}
-                onClick={() => onEditBlock(block)}
-                className="absolute inset-x-1 flex items-start gap-1.5 overflow-hidden rounded-lg px-2 py-1 text-white shadow-sm transition active:scale-[0.99]"
-                style={{ top: top + 1, height: height - 2, background: categoryColor(block.category), opacity: block.done ? 0.45 : 1 }}
-              >
-                <input
-                  type="checkbox"
-                  checked={!!block.done}
-                  onClick={(event) => event.stopPropagation()}
-                  onChange={() => onToggleDone(block.id)}
-                  className="mt-0.5 size-4 shrink-0 accent-white"
-                />
-                <div className="min-w-0">
-                  <p className={`truncate text-[13px] font-bold leading-tight ${block.done ? 'line-through' : ''}`}>
-                    {block.title}
-                  </p>
-                  {height >= 32 && (
-                    <p className="text-[11px] opacity-80">
-                      {minutesToLabel(block.start)}–{minutesToLabel(block.end)}
-                    </p>
-                  )}
-                </div>
+          return (
+            <div key={rowStart} className="flex border-b border-black/15 last:border-b-0" style={{ height: ROW_H }}>
+              {/* 시간 라벨 */}
+              <div className="flex w-10 shrink-0 items-center justify-center border-r border-black/15 bg-black/[0.03] text-[13px] font-medium text-[var(--color-text)]">
+                {Math.floor(rowStart / 60)}
               </div>
-            )
-          })}
 
-          {/* 현재 시각 라인 */}
-          {nowMinutes >= dayStart && nowMinutes <= dayEnd && (
-            <div
-              className="pointer-events-none absolute inset-x-0 z-10 border-t-2 border-red-500"
-              style={{ top: ((nowMinutes - dayStart) / 10) * PX_PER_10MIN }}
-            >
-              <span className="absolute -top-2.5 right-0 rounded bg-red-500 px-1 text-[10px] font-bold text-white">
-                {minutesToLabel(nowMinutes)}
-              </span>
+              {/* 10분 x 6칸 */}
+              <div className="relative flex-1">
+                <div className="absolute inset-0 flex">
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleCellClick(rowStart + i * 10)}
+                      aria-label={`${minutesToLabel(rowStart + i * 10)} 블록`}
+                      className="flex-1 border-r border-black/[0.08] transition last:border-r-0 active:bg-black/5"
+                    />
+                  ))}
+                </div>
+
+                {/* 블록 조각 (색칠) */}
+                {segments.map(({ block, left, width, isHead }) => (
+                  <div
+                    key={block.id}
+                    onClick={() => onEditBlock(block)}
+                    className="absolute inset-y-0 flex cursor-pointer items-center gap-1 overflow-hidden px-1.5 text-white"
+                    style={{
+                      left: `${left * 100}%`,
+                      width: `${width * 100}%`,
+                      background: categoryColor(block.category),
+                      opacity: block.done ? 0.4 : 0.92,
+                    }}
+                  >
+                    {isHead && (
+                      <>
+                        <button
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            onToggleDone(block.id)
+                          }}
+                          aria-label="완료 체크"
+                          className={`flex size-4.5 shrink-0 items-center justify-center rounded-full border-2 border-white/90 text-[10px] font-bold leading-none ${
+                            block.done ? 'bg-white text-black/60' : 'bg-transparent'
+                          }`}
+                        >
+                          {block.done ? '✓' : ''}
+                        </button>
+                        <span className={`truncate text-xs font-bold ${block.done ? 'line-through' : ''}`}>
+                          {block.title}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                ))}
+
+                {/* 현재 시각 세로 라인 */}
+                {isNowRow && (
+                  <div
+                    className="pointer-events-none absolute inset-y-0 z-10 w-0.5 bg-red-500"
+                    style={{ left: `${((nowMinutes - rowStart) / 60) * 100}%` }}
+                  >
+                    <span className="absolute -top-0.5 left-1 rounded bg-red-500 px-1 text-[9px] font-bold text-white">
+                      {minutesToLabel(nowMinutes)}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-        </div>
+          )
+        })}
       </div>
     </section>
   )
