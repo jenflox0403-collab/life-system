@@ -107,29 +107,25 @@ body {
   font-weight: 600;
 }
 
-/* ===== SAO 체크박스 (파랑 그라데이션 원형) ===== */
-.sao-check {
+/* ===== 체크박스: 기본 네모 모양 + 어떤 기기서든 항상 흰색 체크 ===== */
+.app-check {
   appearance: none;
   -webkit-appearance: none;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
-  border-radius: 50%;
-  border: 2px solid #c3cad1;
-  background: linear-gradient(180deg, #ffffff, #f2f5f7);
+  border-radius: 4px;
+  border: 1.5px solid #c3cad1;
+  background: #fff;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
 }
-.sao-check:checked {
-  border-color: transparent;
+.app-check:checked {
+  border-color: var(--color-accent);
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E")
-      center / 62% no-repeat,
-    linear-gradient(180deg, #55b9e6, #2f95c9);
-  box-shadow: 0 2px 8px rgba(59, 167, 220, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-.sao-check:active {
-  transform: scale(0.9);
+      center / 70% no-repeat,
+    var(--color-accent);
 }
 
 /* 모바일에서 탭바 아래 안전 영역(아이폰 홈바) 확보 */

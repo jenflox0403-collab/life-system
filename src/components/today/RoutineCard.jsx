@@ -93,7 +93,7 @@ export default function RoutineCard({ title, emoji, items, checked, onToggle, on
                   type="checkbox"
                   checked={!!checked[item.id]}
                   onChange={() => onToggle(item.id)}
-                  className="size-5 accent-[var(--color-accent)]"
+                  className="app-check"
                 />
                 <span className={`flex-1 text-[15px] ${checked[item.id] ? 'text-[var(--color-muted)] line-through' : ''}`}>
                   {item.name}
