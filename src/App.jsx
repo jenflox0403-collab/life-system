@@ -39,7 +39,7 @@ export default function App() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/10 bg-white/80 px-5 py-3.5 shadow-[0_2px_12px_rgba(60,75,90,0.08)] backdrop-blur">
-        <h1 className="sao-title sao-en text-xl font-bold text-[var(--color-heading)]">{current.en}</h1>
+        <h1 className="sao-title text-xl font-bold tracking-tight text-[var(--color-heading)]">{current.label}</h1>
         <button
           onClick={() => setIsSettingsOpen(true)}
           aria-label="설정 및 백업"

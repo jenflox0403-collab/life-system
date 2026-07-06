@@ -37,8 +37,8 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
 
   return (
     <section className="sao-card p-5">
-      <h3 className="sao-title sao-en mb-3 font-bold">
-        To-Do
+      <h3 className="sao-title mb-3 font-bold">
+        오늘 투두
         <span className="ml-2 text-sm font-medium text-[var(--color-muted)]">{remaining}개 남음</span>
       </h3>
 

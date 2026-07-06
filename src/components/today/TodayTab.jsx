@@ -100,7 +100,7 @@ export default function TodayTab() {
       </section>
 
       <RoutineCard
-        title="Morning Routine"
+        title="아침루틴"
         emoji="🌅"
         items={routines.morning}
         checked={todayLog.morning ?? {}}
@@ -122,7 +122,7 @@ export default function TodayTab() {
       />
 
       <RoutineCard
-        title="Night Routine"
+        title="저녁 마감루틴"
         emoji="🌙"
         items={routines.evening}
         checked={todayLog.evening ?? {}}

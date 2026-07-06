@@ -33,7 +33,7 @@ export default function RoutineCard({ title, emoji, items, checked, onToggle, on
   return (
     <section className="sao-card p-5">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="sao-title sao-en font-bold">
+        <h3 className="sao-title font-bold">
           {title}
           <span className="ml-2 text-sm font-medium text-[var(--color-muted)]">
             {doneCount}/{items.length}
