@@ -7,16 +7,26 @@ import ContentTab from './components/content/ContentTab.jsx'
 import JournalTab from './components/journal/JournalTab.jsx'
 import TimerTab from './components/timer/TimerTab.jsx'
 import SettingsSheet from './components/ui/SettingsSheet.jsx'
+import {
+  IconToday,
+  IconPlan,
+  IconHabits,
+  IconCalendar,
+  IconContent,
+  IconJournal,
+  IconTimer,
+  IconSettings,
+} from './components/ui/icons.jsx'
 
 // 이 파일은 앱의 뼈대 담당 — 상단 헤더 + 화면 전환 + 하단 탭바
 const TABS = [
-  { id: 'today', label: '오늘', icon: '☀️', screen: TodayTab },
-  { id: 'plan', label: '계획', icon: '🎯', screen: PlanTab },
-  { id: 'habits', label: '습관', icon: '✅', screen: HabitsTab },
-  { id: 'calendar', label: '달력', icon: '📅', screen: CalendarTab },
-  { id: 'content', label: '콘텐츠', icon: '🎬', screen: ContentTab },
-  { id: 'journal', label: '기록', icon: '📖', screen: JournalTab },
-  { id: 'timer', label: '타이머', icon: '⏱️', screen: TimerTab },
+  { id: 'today', label: '오늘', Icon: IconToday, screen: TodayTab },
+  { id: 'plan', label: '계획', Icon: IconPlan, screen: PlanTab },
+  { id: 'habits', label: '습관', Icon: IconHabits, screen: HabitsTab },
+  { id: 'calendar', label: '달력', Icon: IconCalendar, screen: CalendarTab },
+  { id: 'content', label: '콘텐츠', Icon: IconContent, screen: ContentTab },
+  { id: 'journal', label: '기록', Icon: IconJournal, screen: JournalTab },
+  { id: 'timer', label: '타이머', Icon: IconTimer, screen: TimerTab },
 ]
 
 export default function App() {
@@ -27,40 +37,49 @@ export default function App() {
   const Screen = current.screen
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-2xl flex-col">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/5 bg-white/90 px-4 py-3 backdrop-blur">
-        <h1 className="text-lg font-bold">{current.label}</h1>
+    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/5 bg-white/90 px-5 py-3.5 backdrop-blur">
+        <h1 className="text-xl font-bold tracking-tight">{current.label}</h1>
         <button
           onClick={() => setIsSettingsOpen(true)}
           aria-label="설정 및 백업"
-          className="rounded-full p-2 text-xl leading-none transition hover:bg-black/5 active:scale-95"
+          className="rounded-full p-2 text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-text)] active:scale-95"
         >
-          ⚙️
+          <IconSettings width={22} height={22} />
         </button>
       </header>
 
-      <main className="flex-1 px-4 py-4 pb-24">
+      <main className="flex-1 px-5 py-5 pb-28 sm:px-6">
         <Screen />
       </main>
 
       <nav
         aria-label="주요 탭"
-        className="pb-safe fixed inset-x-0 bottom-0 z-10 border-t border-black/5 bg-white/95 backdrop-blur"
+        className="pb-safe fixed inset-x-0 bottom-0 z-10 border-t border-black/[0.07] bg-white/95 backdrop-blur"
       >
-        <div className="mx-auto flex max-w-2xl">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              aria-current={tab.id === activeTab ? 'page' : undefined}
-              className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] transition ${
-                tab.id === activeTab ? 'font-bold text-[var(--color-accent)]' : 'text-[var(--color-muted)]'
-              }`}
-            >
-              <span className="text-lg leading-none">{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
+        <div className="mx-auto flex max-w-5xl px-1">
+          {TABS.map((tab) => {
+            const isActive = tab.id === activeTab
+            const TabIcon = tab.Icon
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                aria-current={isActive ? 'page' : undefined}
+                className={`group flex flex-1 flex-col items-center gap-1 pt-2.5 pb-2 text-xs font-semibold transition-colors ${
+                  isActive ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)] hover:text-[var(--color-text)]'
+                }`}
+              >
+                <TabIcon
+                  width={26}
+                  height={26}
+                  strokeWidth={isActive ? 2.1 : 1.75}
+                  className="transition-transform group-active:scale-90"
+                />
+                <span className={isActive ? 'font-bold' : ''}>{tab.label}</span>
+              </button>
+            )
+          })}
         </div>
       </nav>
 

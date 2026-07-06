@@ -20,7 +20,7 @@ export default function SettingsSheet({ onClose }) {
   return (
     <div className="fixed inset-0 z-20 flex items-end justify-center bg-black/40" onClick={onClose}>
       <div
-        className="pb-safe w-full max-w-2xl rounded-t-3xl bg-white p-6"
+        className="pb-safe w-full max-w-5xl rounded-t-3xl bg-white p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 className="mb-1 text-lg font-bold">설정</h2>
