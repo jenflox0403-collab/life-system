@@ -86,7 +86,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
               type="checkbox"
               checked={todo.done}
               onChange={() => toggle(todo.id)}
-              className="sao-check"
+              className="size-5 accent-[var(--color-accent)]"
             />
             <span className={`flex-1 text-[15px] ${todo.done ? 'text-[var(--color-muted)] line-through' : ''}`}>
               {todo.text}
