@@ -37,8 +37,8 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
 
   return (
     <section className="sao-card p-5">
-      <h3 className="sao-title mb-3 font-bold">
-        오늘 투두
+      <h3 className="sao-title sao-en mb-3 font-bold">
+        To-Do
         <span className="ml-2 text-sm font-medium text-[var(--color-muted)]">{remaining}개 남음</span>
       </h3>
 
@@ -86,7 +86,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
               type="checkbox"
               checked={todo.done}
               onChange={() => toggle(todo.id)}
-              className="size-5 accent-[var(--color-accent)]"
+              className="sao-check"
             />
             <span className={`flex-1 text-[15px] ${todo.done ? 'text-[var(--color-muted)] line-through' : ''}`}>
               {todo.text}

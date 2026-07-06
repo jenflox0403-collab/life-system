@@ -20,13 +20,13 @@ import {
 
 // 이 파일은 앱의 뼈대 담당 — 상단 헤더 + 화면 전환 + 하단 탭바
 const TABS = [
-  { id: 'today', label: '오늘', Icon: IconToday, screen: TodayTab },
-  { id: 'plan', label: '계획', Icon: IconPlan, screen: PlanTab },
-  { id: 'habits', label: '습관', Icon: IconHabits, screen: HabitsTab },
-  { id: 'calendar', label: '달력', Icon: IconCalendar, screen: CalendarTab },
-  { id: 'content', label: '콘텐츠', Icon: IconContent, screen: ContentTab },
-  { id: 'journal', label: '기록', Icon: IconJournal, screen: JournalTab },
-  { id: 'timer', label: '타이머', Icon: IconTimer, screen: TimerTab },
+  { id: 'today', label: '오늘', en: 'Today', Icon: IconToday, screen: TodayTab },
+  { id: 'plan', label: '계획', en: 'Plan', Icon: IconPlan, screen: PlanTab },
+  { id: 'habits', label: '습관', en: 'Habit', Icon: IconHabits, screen: HabitsTab },
+  { id: 'calendar', label: '달력', en: 'Calendar', Icon: IconCalendar, screen: CalendarTab },
+  { id: 'content', label: '콘텐츠', en: 'Content', Icon: IconContent, screen: ContentTab },
+  { id: 'journal', label: '기록', en: 'Journal', Icon: IconJournal, screen: JournalTab },
+  { id: 'timer', label: '타이머', en: 'Timer', Icon: IconTimer, screen: TimerTab },
 ]
 
 export default function App() {
@@ -39,7 +39,7 @@ export default function App() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/10 bg-white/80 px-5 py-3.5 shadow-[0_2px_12px_rgba(60,75,90,0.08)] backdrop-blur">
-        <h1 className="sao-title text-xl font-bold tracking-tight text-[var(--color-heading)]">{current.label}</h1>
+        <h1 className="sao-title sao-en text-xl font-bold text-[var(--color-heading)]">{current.en}</h1>
         <button
           onClick={() => setIsSettingsOpen(true)}
           aria-label="설정 및 백업"

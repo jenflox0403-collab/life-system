@@ -23,7 +23,7 @@ export default function SettingsSheet({ onClose }) {
         className="pb-safe w-full max-w-5xl sao-sheet p-6"
         onClick={(event) => event.stopPropagation()}
       >
-        <h2 className="mb-1 text-lg font-bold">설정</h2>
+        <h2 className="sao-title sao-en mb-1 text-lg font-bold">System</h2>
         <p className="mb-5 text-sm text-[var(--color-muted)]">
           데이터는 이 기기 브라우저에만 저장돼요. 주기적으로 백업해주세요!
         </p>

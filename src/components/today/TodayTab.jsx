@@ -100,13 +100,15 @@ export default function TodayTab() {
       </section>
 
       <RoutineCard
-        title="아침루틴"
+        title="Morning Routine"
         emoji="🌅"
         items={routines.morning}
         checked={todayLog.morning ?? {}}
         onToggle={(id) => toggleRoutine('morning', id)}
         onChangeItems={(items) => setRoutines({ ...routines, morning: items })}
       />
+
+      <TodoSection todos={todayTodos} onChange={changeTodos} onSendToTimeblock={sendTodoToTimeblock} />
 
       <TimeblockSection
         blocks={todayBlocks}
@@ -119,10 +121,8 @@ export default function TodayTab() {
         hasYesterday={hasYesterday}
       />
 
-      <TodoSection todos={todayTodos} onChange={changeTodos} onSendToTimeblock={sendTodoToTimeblock} />
-
       <RoutineCard
-        title="저녁 마감루틴"
+        title="Night Routine"
         emoji="🌙"
         items={routines.evening}
         checked={todayLog.evening ?? {}}

@@ -33,7 +33,7 @@ export default function RoutineCard({ title, emoji, items, checked, onToggle, on
   return (
     <section className="sao-card p-5">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="sao-title font-bold">
+        <h3 className="sao-title sao-en font-bold">
           {title}
           <span className="ml-2 text-sm font-medium text-[var(--color-muted)]">
             {doneCount}/{items.length}
@@ -93,7 +93,7 @@ export default function RoutineCard({ title, emoji, items, checked, onToggle, on
                   type="checkbox"
                   checked={!!checked[item.id]}
                   onChange={() => onToggle(item.id)}
-                  className="size-5 accent-[var(--color-accent)]"
+                  className="sao-check"
                 />
                 <span className={`flex-1 text-[15px] ${checked[item.id] ? 'text-[var(--color-muted)] line-through' : ''}`}>
                   {item.name}
@@ -107,7 +107,7 @@ export default function RoutineCard({ title, emoji, items, checked, onToggle, on
 
       {isAllDone && !isEditing && (
         <p className="animate-bounce pt-3 text-center text-sm font-bold text-[var(--color-accent)]">
-          🎉 {title} 완료! 멋져요!
+          🎉 {title} 완료!
         </p>
       )}
     </section>

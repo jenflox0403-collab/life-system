@@ -2,6 +2,7 @@
 export const CATEGORIES = [
   { id: 'work', label: '업무', color: 'var(--cat-work)' },
   { id: 'content', label: '콘텐츠', color: 'var(--cat-content)' },
+  { id: 'study', label: '공부', color: 'var(--cat-study)' },
   { id: 'exercise', label: '운동', color: 'var(--cat-exercise)' },
   { id: 'faith', label: '신앙', color: 'var(--cat-faith)' },
   { id: 'personal', label: '개인', color: 'var(--cat-personal)' },

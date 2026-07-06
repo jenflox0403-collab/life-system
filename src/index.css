@@ -14,6 +14,7 @@
   /* 타임블록 카테고리 색 */
   --cat-work: #3ba7dc;
   --cat-content: #e0426a;
+  --cat-study: #5470c6;
   --cat-exercise: #4cc38a;
   --cat-faith: #9d7fe0;
   --cat-personal: #f0a53c;
@@ -96,6 +97,39 @@ body {
   border-bottom: none;
   background: linear-gradient(180deg, #ffffff, #f4f7f9);
   box-shadow: 0 -8px 30px rgba(60, 75, 90, 0.2);
+}
+
+/* ===== SAO 영문 타이틀 서체 (기기 내장 폰트만 사용) ===== */
+.sao-en {
+  font-family: 'Avenir Next Condensed', 'Futura', 'Arial Narrow', 'Segoe UI', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 600;
+}
+
+/* ===== SAO 체크박스 (파랑 그라데이션 원형) ===== */
+.sao-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid #c3cad1;
+  background: linear-gradient(180deg, #ffffff, #f2f5f7);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.sao-check:checked {
+  border-color: transparent;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E")
+      center / 62% no-repeat,
+    linear-gradient(180deg, #55b9e6, #2f95c9);
+  box-shadow: 0 2px 8px rgba(59, 167, 220, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.sao-check:active {
+  transform: scale(0.9);
 }
 
 /* 모바일에서 탭바 아래 안전 영역(아이폰 홈바) 확보 */

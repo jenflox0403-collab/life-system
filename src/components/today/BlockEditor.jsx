@@ -29,7 +29,7 @@ export default function BlockEditor({ initial, dayStart, dayEnd, onSave, onDelet
         className="pb-safe w-full max-w-5xl sao-sheet p-6"
         onClick={(event) => event.stopPropagation()}
       >
-        <h3 className="mb-4 text-lg font-bold">{initial.id ? '블록 수정' : '새 타임블록'}</h3>
+        <h3 className="sao-title sao-en mb-4 text-lg font-bold">{initial.id ? 'Edit Block' : 'New Block'}</h3>
 
         <input
           value={title}
