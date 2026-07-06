@@ -38,8 +38,8 @@ export default function App() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/5 bg-white/90 px-5 py-3.5 backdrop-blur">
-        <h1 className="text-xl font-bold tracking-tight">{current.label}</h1>
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/10 bg-white/80 px-5 py-3.5 shadow-[0_2px_12px_rgba(60,75,90,0.08)] backdrop-blur">
+        <h1 className="sao-title text-xl font-bold tracking-tight text-[var(--color-heading)]">{current.label}</h1>
         <button
           onClick={() => setIsSettingsOpen(true)}
           aria-label="설정 및 백업"
@@ -55,7 +55,7 @@ export default function App() {
 
       <nav
         aria-label="주요 탭"
-        className="pb-safe fixed inset-x-0 bottom-0 z-10 border-t border-black/[0.07] bg-white/95 backdrop-blur"
+        className="pb-safe fixed inset-x-0 bottom-0 z-10 border-t border-black/10 bg-white/85 shadow-[0_-4px_16px_rgba(60,75,90,0.1)] backdrop-blur"
       >
         <div className="mx-auto flex max-w-5xl px-1">
           {TABS.map((tab) => {
@@ -66,10 +66,13 @@ export default function App() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`group flex flex-1 flex-col items-center gap-1 pt-2.5 pb-2 text-xs font-semibold transition-colors ${
+                className={`group relative flex flex-1 flex-col items-center gap-1 pt-2.5 pb-2 text-xs font-semibold transition-colors ${
                   isActive ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)] hover:text-[var(--color-text)]'
                 }`}
               >
+                {isActive && (
+                  <span className="absolute top-0 size-1.5 rotate-45 bg-[var(--color-accent)]" />
+                )}
                 <TabIcon
                   width={26}
                   height={26}

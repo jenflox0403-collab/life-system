@@ -1,21 +1,23 @@
 @import 'tailwindcss';
 
-/* 이 파일은 앱 전체 공통 스타일 담당 */
+/* 이 파일은 앱 전체 공통 스타일 담당 — SAO(소드아트온라인) 시스템 창 스타일 */
 
 :root {
+  --color-bg: #dfe5ea;
   --color-surface: #ffffff;
-  --color-bg: #f7f7f8;
-  --color-text: #1c1c1e;
-  --color-muted: #8e8e93;
-  --color-accent: #4f6ef7;
+  --color-text: #3a3f46;
+  --color-heading: #4a4f57;
+  --color-muted: #9aa1a9;
+  --color-accent: #3ba7dc; /* SAO 파랑 (확인/포인트) */
+  --color-danger: #e0426a; /* SAO 핑크 (취소/경고) */
 
-  /* 타임블록 카테고리 색 (나중에 사용) */
-  --cat-work: #4f6ef7;
-  --cat-content: #e0559a;
-  --cat-exercise: #34c759;
-  --cat-faith: #af7ff0;
-  --cat-personal: #ff9f0a;
-  --cat-buffer: #b0b0b8;
+  /* 타임블록 카테고리 색 */
+  --cat-work: #3ba7dc;
+  --cat-content: #e0426a;
+  --cat-exercise: #4cc38a;
+  --cat-faith: #9d7fe0;
+  --cat-personal: #f0a53c;
+  --cat-buffer: #aeb6bd;
 }
 
 html,
@@ -23,9 +25,77 @@ body {
   font-family:
     'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
     'Apple SD Gothic Neo', 'Malgun Gothic', 'Segoe UI', system-ui, sans-serif;
-  background: var(--color-bg);
+  /* 은은한 하늘빛 배경 — 게임 속 공중 도시 느낌 */
+  background:
+    linear-gradient(180deg, #e8edf1 0%, #dde4ea 40%, #d5dde4 100%) fixed;
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
+}
+
+/* ===== SAO 시스템 창 패널 ===== */
+.sao-card {
+  position: relative;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 130, 140, 0.25);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 55%, #f2f5f7 100%);
+  box-shadow:
+    0 6px 18px rgba(60, 75, 90, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+}
+
+/* 카드 상단의 은은한 헤더 밴드 (Invite 창 상단 느낌) */
+.sao-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 42px;
+  background: linear-gradient(180deg, rgba(160, 172, 182, 0.14), rgba(160, 172, 182, 0));
+  pointer-events: none;
+}
+
+/* 카드 제목 앞 다이아몬드 포인트 */
+.sao-title::before {
+  content: '◆';
+  margin-right: 6px;
+  font-size: 0.7em;
+  color: var(--color-accent);
+  vertical-align: 1px;
+}
+
+/* ===== 버튼 ===== */
+.sao-btn-primary {
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #55b9e6, #2f95c9);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(59, 167, 220, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: transform 0.1s, filter 0.15s;
+}
+.sao-btn-primary:active {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+.sao-btn-danger {
+  border-radius: 9999px;
+  border: 1.5px solid rgba(224, 66, 106, 0.5);
+  color: var(--color-danger);
+  font-weight: 700;
+  background: rgba(224, 66, 106, 0.06);
+  transition: transform 0.1s;
+}
+.sao-btn-danger:active {
+  transform: scale(0.97);
+}
+
+/* 아래에서 떠오르는 시트 (블록 편집/설정 창) */
+.sao-sheet {
+  border-radius: 18px 18px 0 0;
+  border: 1px solid rgba(120, 130, 140, 0.25);
+  border-bottom: none;
+  background: linear-gradient(180deg, #ffffff, #f4f7f9);
+  box-shadow: 0 -8px 30px rgba(60, 75, 90, 0.2);
 }
 
 /* 모바일에서 탭바 아래 안전 영역(아이폰 홈바) 확보 */

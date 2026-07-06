@@ -26,7 +26,7 @@ export default function BlockEditor({ initial, dayStart, dayEnd, onSave, onDelet
   return (
     <div className="fixed inset-0 z-20 flex items-end justify-center bg-black/40" onClick={onClose}>
       <div
-        className="pb-safe w-full max-w-5xl rounded-t-3xl bg-white p-6"
+        className="pb-safe w-full max-w-5xl sao-sheet p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <h3 className="mb-4 text-lg font-bold">{initial.id ? '블록 수정' : '새 타임블록'}</h3>
@@ -78,11 +78,11 @@ export default function BlockEditor({ initial, dayStart, dayEnd, onSave, onDelet
 
         <div className="flex gap-2">
           {initial.id && (
-            <button onClick={() => onDelete(initial.id)} className="rounded-xl border border-red-200 px-4 py-3 font-bold text-red-500">
+            <button onClick={() => onDelete(initial.id)} className="sao-btn-danger px-5 py-3">
               삭제
             </button>
           )}
-          <button onClick={handleSave} className="flex-1 rounded-xl bg-[var(--color-accent)] py-3 font-bold text-white active:scale-[0.98]">
+          <button onClick={handleSave} className="flex-1 sao-btn-primary py-3">
             저장
           </button>
         </div>

@@ -20,7 +20,7 @@ export default function SettingsSheet({ onClose }) {
   return (
     <div className="fixed inset-0 z-20 flex items-end justify-center bg-black/40" onClick={onClose}>
       <div
-        className="pb-safe w-full max-w-5xl rounded-t-3xl bg-white p-6"
+        className="pb-safe w-full max-w-5xl sao-sheet p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 className="mb-1 text-lg font-bold">설정</h2>
@@ -31,7 +31,7 @@ export default function SettingsSheet({ onClose }) {
         <div className="flex flex-col gap-3">
           <button
             onClick={downloadBackup}
-            className="rounded-xl bg-[var(--color-accent)] py-3 font-bold text-white transition active:scale-[0.98]"
+            className="sao-btn-primary py-3"
           >
             📤 데이터 내보내기 (JSON 백업)
           </button>

@@ -41,10 +41,10 @@ export default function TimeblockSection({
   }
 
   return (
-    <section className="rounded-2xl bg-white p-5 shadow-sm">
+    <section className="sao-card p-5">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-bold">
-          ⏰ 타임블록
+        <h3 className="sao-title font-bold">
+          타임블록
           {rate !== null && (
             <span className="ml-2 text-sm font-medium text-[var(--color-muted)]">실행률 {rate}%</span>
           )}

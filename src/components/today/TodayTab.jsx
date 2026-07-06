@@ -94,7 +94,7 @@ export default function TodayTab() {
 
   return (
     <div className="flex flex-col gap-4">
-      <section className="rounded-2xl bg-white p-5 shadow-sm">
+      <section className="sao-card p-5">
         <p className="text-sm text-[var(--color-muted)]">오늘</p>
         <h2 className="text-xl font-bold">{formatKorean()}</h2>
       </section>

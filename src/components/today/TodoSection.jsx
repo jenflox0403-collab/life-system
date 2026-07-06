@@ -4,10 +4,10 @@ import { uid } from '../../lib/uid.js'
 // 이 파일은 "오늘 투두" 카드 담당
 // 우선순위 도트: 긴급+중요(빨강) / 중요(파랑) / 긴급(주황) / 둘 다 아님(회색)
 export function priorityColor(todo) {
-  if (todo.urgent && todo.important) return '#ef4444'
-  if (todo.important) return '#4f6ef7'
-  if (todo.urgent) return '#ff9f0a'
-  return '#b0b0b8'
+  if (todo.urgent && todo.important) return '#e0426a'
+  if (todo.important) return '#3ba7dc'
+  if (todo.urgent) return '#f0a53c'
+  return '#aeb6bd'
 }
 
 export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
@@ -36,9 +36,9 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
   const remaining = todos.filter((todo) => !todo.done).length
 
   return (
-    <section className="rounded-2xl bg-white p-5 shadow-sm">
-      <h3 className="mb-3 font-bold">
-        📝 오늘 투두
+    <section className="sao-card p-5">
+      <h3 className="sao-title mb-3 font-bold">
+        오늘 투두
         <span className="ml-2 text-sm font-medium text-[var(--color-muted)]">{remaining}개 남음</span>
       </h3>
 
@@ -68,7 +68,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
           >
             ⭐ 중요
           </button>
-          <button type="submit" className="ml-auto rounded-xl bg-[var(--color-accent)] px-4 py-1.5 font-bold text-white active:scale-95">
+          <button type="submit" className="ml-auto sao-btn-primary px-5 py-1.5">
             추가
           </button>
         </div>
