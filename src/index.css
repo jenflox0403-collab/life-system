@@ -20,7 +20,9 @@
 
 html,
 body {
-  font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  font-family:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    'Apple SD Gothic Neo', 'Malgun Gothic', 'Segoe UI', system-ui, sans-serif;
   background: var(--color-bg);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
