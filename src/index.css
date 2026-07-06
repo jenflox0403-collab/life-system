@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+
+/* 이 파일은 앱 전체 공통 스타일 담당 */
+
+:root {
+  --color-surface: #ffffff;
+  --color-bg: #f7f7f8;
+  --color-text: #1c1c1e;
+  --color-muted: #8e8e93;
+  --color-accent: #4f6ef7;
+
+  /* 타임블록 카테고리 색 (나중에 사용) */
+  --cat-work: #4f6ef7;
+  --cat-content: #e0559a;
+  --cat-exercise: #34c759;
+  --cat-faith: #af7ff0;
+  --cat-personal: #ff9f0a;
+  --cat-buffer: #b0b0b8;
+}
+
+html,
+body {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 모바일에서 탭바 아래 안전 영역(아이폰 홈바) 확보 */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
