@@ -1,25 +1,31 @@
 import { todayKey } from '../../lib/date.js'
-import { eventType, eventColor, isAwaitingSettlement } from '../../lib/eventTypes.js'
+import { eventType, eventColor, eventCoversDay } from '../../lib/eventTypes.js'
 
-// 상태 뱃지 색: 정산완료=초록(끝), 진행=빨강(돈 대기), 나머지=회색(협의 중)
-function statusStyle(status, awaiting) {
-  if (status === '정산완료') return { background: 'rgba(76,195,138,0.14)', color: '#2f9e6b' }
-  if (awaiting) return { background: 'rgba(201,83,110,0.12)', color: 'var(--color-danger)' }
-  return { background: 'rgba(0,0,0,0.05)', color: 'var(--color-muted)' }
+// "2026-07-07" → "7/7"
+function shortDate(key) {
+  return key.slice(5).replace('-', '/')
+}
+
+// 일정 기간 표기 (여러 날이면 "7/7–7/9")
+function rangeLabel(event) {
+  if (event.endDate && event.endDate > event.date) {
+    return `${shortDate(event.date)}–${shortDate(event.endDate)}`
+  }
+  return shortDate(event.date)
 }
 
 // 이 파일은 일정 목록 담당
-// 날짜가 선택되면 그날 일정, 아니면 오늘 이후 다가오는 일정을 보여줌
-export default function EventList({ events, selected, onEditEvent, onAddForDay }) {
+// 날짜가 선택되면 그날 일정 + 그날 일기, 아니면 다가오는 일정을 보여줌
+export default function EventList({ events, selected, journalText, onEditEvent, onAddForDay }) {
   const today = todayKey()
 
   const visible = (
     selected
-      ? events.filter((e) => e.date === selected)
-      : events.filter((e) => e.date >= today)
+      ? events.filter((e) => eventCoversDay(e, selected))
+      : events.filter((e) => (e.endDate || e.date) >= today)
   ).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
 
-  const heading = selected ? `${selected.slice(5).replace('-', '/')} 일정` : '다가오는 일정'
+  const heading = selected ? `${shortDate(selected)} 일정` : '다가오는 일정'
 
   return (
     <section className="sao-card p-5">
@@ -38,7 +44,6 @@ export default function EventList({ events, selected, onEditEvent, onAddForDay }
         <ul className="flex flex-col gap-1.5">
           {visible.map((event) => {
             const type = eventType(event.type)
-            const awaiting = isAwaitingSettlement(event)
             return (
               <li key={event.id}>
                 <button
@@ -48,30 +53,30 @@ export default function EventList({ events, selected, onEditEvent, onAddForDay }
                   style={{ borderLeft: `3px solid ${eventColor(event.type)}` }}
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="truncate text-[15px] font-medium">{event.title}</span>
-                      {event.brand && (
-                        <span className="shrink-0 text-xs text-[var(--color-muted)]">· {event.brand}</span>
-                      )}
-                    </div>
+                    <span className="truncate text-[15px] font-medium">{event.title}</span>
                     <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs">
                       <span style={{ color: eventColor(event.type) }}>{type.label}</span>
-                      {event.status && (
-                        <span className="rounded-full px-1.5 py-px" style={statusStyle(event.status, awaiting)}>
-                          {event.status}
-                        </span>
-                      )}
                       {event.memo && <span className="truncate text-[var(--color-muted)]">{event.memo}</span>}
                     </div>
                   </div>
-                  {!selected && (
-                    <span className="shrink-0 text-xs text-[var(--color-muted)]">{event.date.slice(5).replace('-', '/')}</span>
-                  )}
+                  <span className="shrink-0 text-xs text-[var(--color-muted)]">{rangeLabel(event)}</span>
                 </button>
               </li>
             )
           })}
         </ul>
+      )}
+
+      {/* 선택한 날의 일기 (읽기 전용) */}
+      {selected && (
+        <div className="mt-4 border-t border-black/[0.06] pt-3">
+          <p className="mb-1.5 text-xs font-bold text-[var(--color-muted)]">이 날 일기</p>
+          {journalText ? (
+            <p className="whitespace-pre-wrap rounded-[6px] bg-black/[0.03] px-3 py-2.5 text-sm leading-relaxed">{journalText}</p>
+          ) : (
+            <p className="text-sm text-[var(--color-muted)]">아직 없어요 · 오늘 탭에서 작성해요</p>
+          )}
+        </div>
       )}
     </section>
   )

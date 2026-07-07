@@ -3,6 +3,7 @@ import { uid } from '../../lib/uid.js'
 import { useStoredState } from '../../hooks/useStoredState.js'
 import { todayKey, formatKorean } from '../../lib/date.js'
 import RoutineCard from './RoutineCard.jsx'
+import OverdueTodos from './OverdueTodos.jsx'
 import TodoSection from './TodoSection.jsx'
 import TimeblockSection from './TimeblockSection.jsx'
 import BlockEditor from './BlockEditor.jsx'
@@ -49,6 +50,8 @@ export default function TodayTab() {
 
   const dayLog = routineLog[viewKey] ?? { morning: {}, evening: {} }
   const dayTodos = allTodos.filter((todo) => todo.date === viewKey)
+  // 밀린 할 일: 지난 날짜인데 아직 완료 안 한 것 (오늘 볼 때만 표시)
+  const overdueTodos = allTodos.filter((todo) => !todo.done && todo.date < realToday)
   const dayBlocks = allBlocks[viewKey] ?? []
   const dayDiary = diary[viewKey]?.text ?? ''
 
@@ -65,6 +68,21 @@ export default function TodayTab() {
   /** 미루기: 이 투두를 다음날로 넘김 (다음날 To-Do에 나타남) */
   function deferTodo(todo) {
     setAllTodos(allTodos.map((t) => (t.id === todo.id ? { ...t, date: addDays(viewKey, 1), done: false } : t)))
+  }
+
+  /** 밀린 할 일을 오늘 날짜로 당겨옴 */
+  function bumpTodoToToday(id) {
+    setAllTodos(allTodos.map((t) => (t.id === id ? { ...t, date: realToday } : t)))
+  }
+
+  /** 밀린 할 일 완료 처리 */
+  function markTodoDone(id) {
+    setAllTodos(allTodos.map((t) => (t.id === id ? { ...t, done: true } : t)))
+  }
+
+  /** 밀린 할 일 삭제 */
+  function removeTodo(id) {
+    setAllTodos(allTodos.filter((t) => t.id !== id))
   }
 
   function saveBlock(block) {
@@ -121,6 +139,16 @@ export default function TodayTab() {
           ›
         </button>
       </section>
+
+      {/* 밀린 할 일 (오늘 볼 때만) */}
+      {isToday && overdueTodos.length > 0 && (
+        <OverdueTodos
+          todos={overdueTodos}
+          onBumpToday={bumpTodoToToday}
+          onToggleDone={markTodoDone}
+          onRemove={removeTodo}
+        />
+      )}
 
       <RoutineCard
         title="아침루틴"
