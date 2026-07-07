@@ -8,6 +8,18 @@ export function todayKey(date = new Date()) {
   return `${y}-${m}-${d}`
 }
 
+/** 그 주(월~일) 7일간의 "YYYY-MM-DD" 키 배열 반환 */
+export function weekDateKeys(date = new Date()) {
+  const monday = new Date(date)
+  const offset = (date.getDay() + 6) % 7 // 월=0
+  monday.setDate(date.getDate() - offset)
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday)
+    d.setDate(monday.getDate() + i)
+    return todayKey(d)
+  })
+}
+
 /** "7월 7일 (화)" 같은 한국어 표기 */
 export function formatKorean(date = new Date()) {
   const days = ['일', '월', '화', '수', '목', '금', '토']

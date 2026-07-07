@@ -1,5 +1,7 @@
+import { weekDateKeys } from '../../lib/date.js'
+
 // 이 파일은 아이젠하워 매트릭스 시각화(사분면 그래프) 담당
-// 가로축=긴급도, 세로축=중요도. 완료 전 To-Do를 4칸에 칩으로 배치.
+// 가로축=긴급도, 세로축=중요도. 이번 주 To-Do를 4칸에 칩으로 배치.
 const CELLS = [
   { key: 'q2', match: (t) => t.important && !t.urgent, label: '중요·안급함', sub: '계획해서', color: '#4a9bc9' },
   { key: 'q1', match: (t) => t.important && t.urgent, label: '중요·긴급', sub: '지금 바로', color: '#c9536e' },
@@ -8,12 +10,13 @@ const CELLS = [
 ]
 
 export default function EisenhowerMatrix({ todos, onSendToday, todayKey }) {
-  const active = todos.filter((todo) => !todo.done)
+  const weekKeys = new Set(weekDateKeys())
+  const active = todos.filter((todo) => !todo.done && weekKeys.has(todo.date))
 
   return (
     <section className="sao-card p-5">
       <h3 className="sao-title mb-1 font-bold">아이젠하워 매트릭스</h3>
-      <p className="mb-3 text-xs text-[var(--color-muted)]">완료 전 To-Do를 4분면으로 · 중요·긴급은 오늘로 보내세요</p>
+      <p className="mb-3 text-xs text-[var(--color-muted)]">이번 주 To-Do를 4분면으로 · 중요·긴급은 오늘로 보내세요</p>
 
       <div className="flex">
         {/* 세로축 라벨 */}
@@ -30,10 +33,10 @@ export default function EisenhowerMatrix({ todos, onSendToday, todayKey }) {
               return (
                 <div
                   key={cell.key}
-                  className="min-h-28 rounded-[5px] border p-2"
+                  className="min-h-28 rounded-[5px] border p-2 md:min-h-36"
                   style={{ borderColor: `${cell.color}55`, background: `${cell.color}0d` }}
                 >
-                  <p className="mb-1 text-[13px] font-bold" style={{ color: cell.color }}>
+                  <p className="mb-1 text-sm font-bold" style={{ color: cell.color }}>
                     {cell.label}
                     <span className="ml-1 text-[11px] font-medium text-[var(--color-muted)]">· {cell.sub}</span>
                   </p>
