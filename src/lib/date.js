@@ -50,3 +50,21 @@ export function weekKey(date = new Date()) {
 export function daysInMonth(year, monthIndex) {
   return new Date(year, monthIndex + 1, 0).getDate()
 }
+
+/** 연·월·일 → "2026-07-07" 키 (monthIndex는 0부터) */
+export function dateKey(year, monthIndex, day) {
+  return `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+}
+
+/**
+ * 월간 달력 그리드 칸 배열 (일요일 시작).
+ * 앞쪽 빈칸은 null, 날짜 칸은 { day, key }.
+ */
+export function monthGridCells(year, monthIndex) {
+  const total = daysInMonth(year, monthIndex)
+  const firstDay = new Date(year, monthIndex, 1).getDay() // 0=일
+  return [
+    ...Array.from({ length: firstDay }, () => null),
+    ...Array.from({ length: total }, (_, i) => ({ day: i + 1, key: dateKey(year, monthIndex, i + 1) })),
+  ]
+}

@@ -21,6 +21,12 @@
   --cat-faith: #9d7fe0;
   --cat-personal: #f0a53c;
   --cat-buffer: #aeb6bd;
+
+  /* 달력 일정 유형 색 */
+  --evt-ad: #9d7fe0; /* 광고/협찬 (보라) */
+  --evt-collab: #4cc38a; /* 협업 (초록) */
+  --evt-meeting: #f0a53c; /* 미팅 (주황) */
+  --evt-personal: #aeb6bd; /* 개인 (회색) */
 }
 
 html,
