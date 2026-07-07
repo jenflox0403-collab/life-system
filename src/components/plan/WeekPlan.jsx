@@ -10,6 +10,7 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
   const [goalText, setGoalText] = useState('')
   const [todoText, setTodoText] = useState('')
   const [todoDate, setTodoDate] = useState(todayKey())
+  const [selectedDay, setSelectedDay] = useState(todayKey()) // null이면 '전체' 모드
 
   function addGoal(event) {
     event.preventDefault()
@@ -66,13 +67,32 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
         </ul>
       </section>
 
-      <WeekCalendar todos={todos} />
+      <WeekCalendar
+        todos={todos}
+        selected={selectedDay}
+        onSelectDay={(key) => {
+          setSelectedDay(key)
+          setTodoDate(key)
+        }}
+      />
 
       <EisenhowerMatrix todos={todos} todayKey={todayKey()} onSendToday={(id) => patchTodo(id, { date: todayKey() })} />
 
-      {/* To-Do 전체 목록 */}
+      {/* To-Do 목록 (선택한 날 또는 전체) */}
       <section className="sao-card p-5">
-        <h3 className="sao-title mb-3 font-bold">To-Do 전체</h3>
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="sao-title font-bold">
+            {selectedDay ? `${selectedDay.slice(5).replace('-', '/')} 할 일` : 'To-Do 전체'}
+          </h3>
+          <button
+            type="button"
+            onClick={() => setSelectedDay(null)}
+            className="chip"
+            style={selectedDay === null ? { background: 'rgba(74,155,201,0.13)', borderColor: '#4a9bc9', color: '#3f8cba' } : {}}
+          >
+            전체
+          </button>
+        </div>
         <form onSubmit={addTodo} className="mb-3 flex flex-col gap-2">
           <input
             value={todoText}
@@ -91,21 +111,29 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
           </div>
         </form>
 
-        <ul className="flex flex-col gap-1.5">
-          {[...todos]
+        {(() => {
+          const visible = [...todos]
+            .filter((todo) => selectedDay === null || todo.date === selectedDay)
             .sort((a, b) => (a.date < b.date ? -1 : 1))
-            .map((todo) => (
-              <TodoRow
-                key={todo.id}
-                todo={todo}
-                showDate
-                onToggleDone={() => patchTodo(todo.id, { done: !todo.done })}
-                onToggleUrgent={() => patchTodo(todo.id, { urgent: !todo.urgent })}
-                onToggleImportant={() => patchTodo(todo.id, { important: !todo.important })}
-                onRemove={() => onChangeTodos(todos.filter((t) => t.id !== todo.id))}
-              />
-            ))}
-        </ul>
+          if (visible.length === 0) {
+            return <p className="py-2 text-sm text-[var(--color-muted)]">이 날 할 일이 없어요</p>
+          }
+          return (
+            <ul className="flex flex-col gap-1.5">
+              {visible.map((todo) => (
+                <TodoRow
+                  key={todo.id}
+                  todo={todo}
+                  showDate
+                  onToggleDone={() => patchTodo(todo.id, { done: !todo.done })}
+                  onToggleUrgent={() => patchTodo(todo.id, { urgent: !todo.urgent })}
+                  onToggleImportant={() => patchTodo(todo.id, { important: !todo.important })}
+                  onRemove={() => onChangeTodos(todos.filter((t) => t.id !== todo.id))}
+                />
+              ))}
+            </ul>
+          )
+        })()}
       </section>
     </div>
   )

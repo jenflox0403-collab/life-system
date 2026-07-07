@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { priorityColor } from '../../lib/priority.js'
 
 // 이 파일은 투두 한 줄 담당 (오늘 탭 / 계획 탭 공용)
@@ -15,6 +15,23 @@ export default function TodoRow({
   showDate = false,
 }) {
   const [expanded, setExpanded] = useState(false)
+  const rowRef = useRef(null)
+
+  // 펼쳐진 상태에서 바깥 아무 곳이나 누르면 닫힘
+  useEffect(() => {
+    if (!expanded) return
+    function handleOutside(event) {
+      if (rowRef.current && !rowRef.current.contains(event.target)) {
+        setExpanded(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutside)
+    document.addEventListener('touchstart', handleOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleOutside)
+      document.removeEventListener('touchstart', handleOutside)
+    }
+  }, [expanded])
 
   // 우선순위 없는(회색) 항목은 띠 없이 깔끔하게
   const hasPriority = todo.urgent || todo.important
@@ -22,6 +39,7 @@ export default function TodoRow({
 
   return (
     <li
+      ref={rowRef}
       className="rounded-[5px] border border-black/[0.07] bg-white px-3 py-2"
       style={{ borderLeft: `3px solid ${stripe}` }}
     >

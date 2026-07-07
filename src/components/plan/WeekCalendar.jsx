@@ -1,8 +1,8 @@
 import { todayKey } from '../../lib/date.js'
 
 // 이 파일은 주간 화면에 딸린 이번 주 달력(월~일) 담당
-// 각 날짜에 그날 To-Do 개수를 점으로 표시
-export default function WeekCalendar({ todos }) {
+// 각 날짜에 그날 To-Do 개수를 점으로 표시. 날짜를 누르면 그날로 이동(선택).
+export default function WeekCalendar({ todos, selected, onSelectDay }) {
   const now = new Date()
   // 이번 주 월요일 찾기
   const monday = new Date(now)
@@ -25,21 +25,30 @@ export default function WeekCalendar({ todos }) {
           const key = todayKey(d)
           const count = todos.filter((todo) => todo.date === key && !todo.done).length
           const isToday = key === todayK
+          const isSelected = key === selected
           return (
-            <div
+            <button
               key={key}
-              className={`flex flex-col items-center gap-1 rounded-[5px] border py-2 ${
-                isToday ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/[0.06]' : 'border-black/[0.07]'
+              type="button"
+              onClick={() => onSelectDay(key)}
+              className={`flex cursor-pointer flex-col items-center gap-1 rounded-[5px] border py-2 transition-colors ${
+                isSelected ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/[0.06]' : 'border-black/[0.07]'
               }`}
             >
               <span className={`text-[11px] ${i >= 5 ? 'text-[var(--color-danger)]' : 'text-[var(--color-muted)]'}`}>
                 {labels[i]}
               </span>
-              <span className={`text-sm font-bold ${isToday ? 'text-[var(--color-accent)]' : ''}`}>{d.getDate()}</span>
+              <span
+                className={`text-sm font-bold ${
+                  isSelected ? 'text-[var(--color-accent)]' : isToday ? 'text-[var(--color-accent)] underline decoration-dotted underline-offset-2' : ''
+                }`}
+              >
+                {d.getDate()}
+              </span>
               <span className="flex h-1.5 items-center">
                 {count > 0 && <span className="size-1.5 rounded-full bg-[var(--color-accent)]" />}
               </span>
-            </div>
+            </button>
           )
         })}
       </div>
