@@ -42,6 +42,8 @@ body {
     linear-gradient(180deg, #e7eef5 0%, #dae5ef 45%, #cfdde9 100%) fixed;
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
+  /* 더블탭 확대 차단 (세로 스크롤은 유지) */
+  touch-action: manipulation;
 }
 
 /* ===== SAO 시스템 창 패널 ===== */

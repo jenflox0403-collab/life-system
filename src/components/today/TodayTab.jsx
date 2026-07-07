@@ -9,6 +9,7 @@ import TodoSection from './TodoSection.jsx'
 import TimeblockSection from './TimeblockSection.jsx'
 import BlockEditor from './BlockEditor.jsx'
 import DiarySection from './DiarySection.jsx'
+import EventSheet from '../calendar/EventSheet.jsx'
 
 const DEFAULT_ROUTINES = {
   morning: [
@@ -39,10 +40,11 @@ export default function TodayTab() {
   const [routineLog, setRoutineLog] = useStoredState('routineLog', {})
   const [allTodos, setAllTodos] = useStoredState('todos', [])
   const [allBlocks, setAllBlocks] = useStoredState('timeblocks', {})
-  const [events] = useStoredState('events', []) // 달력에서 자동 로드 (읽기 전용)
+  const [events, setEvents] = useStoredState('events', []) // 달력과 공유 (여기서 추가·수정 가능)
   const [diary, setDiary] = useStoredState('diary', {})
   const [settings] = useStoredState('settings', {})
   const [editorState, setEditorState] = useState(null)
+  const [eventEditing, setEventEditing] = useState(null) // null=닫힘, 'new'=추가, 객체=수정
 
   const dayStart = settings.timeblockStart ?? 360
   const dayEnd = settings.timeblockEnd ?? 1440
@@ -87,6 +89,24 @@ export default function TodayTab() {
   /** 밀린 할 일 삭제 */
   function removeTodo(id) {
     setAllTodos(allTodos.filter((t) => t.id !== id))
+  }
+
+  /** 오늘 일정 추가·수정 (달력과 같은 events 저장소 공유) */
+  function saveEvent(data) {
+    if (eventEditing && eventEditing !== 'new') {
+      setEvents(events.map((e) => (e.id === eventEditing.id ? { ...e, ...data } : e)))
+    } else {
+      setEvents([...events, { id: uid(), ...data }])
+    }
+    setEventEditing(null)
+  }
+
+  /** 오늘 일정 삭제 */
+  function deleteEvent() {
+    if (eventEditing && eventEditing !== 'new') {
+      setEvents(events.filter((e) => e.id !== eventEditing.id))
+    }
+    setEventEditing(null)
   }
 
   function saveBlock(block) {
@@ -154,8 +174,12 @@ export default function TodayTab() {
         />
       )}
 
-      {/* 오늘 일정 (달력에서 자동 로드) */}
-      {dayEvents.length > 0 && <TodayEvents events={dayEvents} />}
+      {/* 오늘 일정 (달력과 공유 · 여기서도 추가/수정) */}
+      <TodayEvents
+        events={dayEvents}
+        onAdd={() => setEventEditing('new')}
+        onEdit={(event) => setEventEditing(event)}
+      />
 
       <RoutineCard
         title="아침루틴"
@@ -205,6 +229,16 @@ export default function TodayTab() {
           onSave={saveBlock}
           onDelete={deleteBlock}
           onClose={() => setEditorState(null)}
+        />
+      )}
+
+      {eventEditing && (
+        <EventSheet
+          event={eventEditing === 'new' ? null : eventEditing}
+          defaultDate={viewKey}
+          onSave={saveEvent}
+          onDelete={deleteEvent}
+          onClose={() => setEventEditing(null)}
         />
       )}
     </div>
