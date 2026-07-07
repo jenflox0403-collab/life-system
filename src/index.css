@@ -8,8 +8,10 @@
   --color-text: #3a3f46;
   --color-heading: #4a4f57;
   --color-muted: #9aa1a9;
-  --color-accent: #3ba7dc; /* SAO 파랑 (확인/포인트) */
-  --color-danger: #e0426a; /* SAO 핑크 (취소/경고) */
+  --color-accent: #4a9bc9; /* SAO 파랑 (확인 버튼) — 채도 낮춰 눈 편하게 */
+  --color-danger: #c9536e; /* SAO 크림슨 (취소/경고) */
+  --color-amber: #e3a93c; /* SAO 노랑 (선택/활성) — 원형 메뉴 버튼 색 */
+  --color-amber-deep: #c98f26;
 
   /* 타임블록 카테고리 색 */
   --cat-work: #3ba7dc;
@@ -26,9 +28,9 @@ body {
   font-family:
     'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
     'Apple SD Gothic Neo', 'Malgun Gothic', 'Segoe UI', system-ui, sans-serif;
-  /* 은은한 하늘빛 배경 — 게임 속 공중 도시 느낌 */
+  /* 은은한 하늘빛 배경 — 게임 속 하늘 느낌 (저채도로 눈 편하게) */
   background:
-    linear-gradient(180deg, #e8edf1 0%, #dde4ea 40%, #d5dde4 100%) fixed;
+    linear-gradient(180deg, #e7eef5 0%, #dae5ef 45%, #cfdde9 100%) fixed;
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
 }
@@ -55,22 +57,52 @@ body {
   pointer-events: none;
 }
 
-/* 카드 제목 앞 다이아몬드 포인트 */
+/* 카드 제목: SAO 창 제목처럼 아래 가는 밑줄 + 앞에 노란 다이아몬드 */
+.sao-title {
+  position: relative;
+  color: var(--color-heading);
+}
 .sao-title::before {
   content: '◆';
   margin-right: 6px;
-  font-size: 0.7em;
-  color: var(--color-accent);
-  vertical-align: 1px;
+  font-size: 0.65em;
+  color: var(--color-amber);
+  vertical-align: 1.5px;
+}
+
+/* ===== SAO 원형 메뉴 버튼 (탭바) ===== */
+.sao-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 130, 140, 0.22);
+  background: linear-gradient(180deg, #f6f8fa, #e6eaee);
+  color: #a2aab2;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(60, 75, 90, 0.14);
+  transition: all 0.15s ease;
+}
+.sao-circle-active {
+  border-color: transparent;
+  background: linear-gradient(180deg, #edb84f, #d99a29);
+  color: #fff;
+  /* 흰 틈 + 노란 겹테두리 = SAO 아이콘 링 */
+  box-shadow:
+    0 0 0 2px #fdfdfd,
+    0 0 0 3.5px var(--color-amber),
+    0 2px 8px rgba(227, 169, 60, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 /* ===== 버튼 ===== */
 .sao-btn-primary {
   border-radius: 9999px;
-  background: linear-gradient(180deg, #55b9e6, #2f95c9);
+  background: linear-gradient(180deg, #5fabd6, #3f8cba);
   color: #fff;
   font-weight: 700;
-  box-shadow: 0 3px 10px rgba(59, 167, 220, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  box-shadow: 0 3px 10px rgba(74, 155, 201, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.45);
   transition: transform 0.1s, filter 0.15s;
 }
 .sao-btn-primary:active {

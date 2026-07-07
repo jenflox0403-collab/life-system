@@ -43,9 +43,9 @@ export default function App() {
         <button
           onClick={() => setIsSettingsOpen(true)}
           aria-label="설정 및 백업"
-          className="rounded-full p-2 text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-text)] active:scale-95"
+          className="sao-circle !h-9 !w-9 transition hover:brightness-95 active:scale-95"
         >
-          <IconSettings width={22} height={22} />
+          <IconSettings width={18} height={18} />
         </button>
       </header>
 
@@ -66,19 +66,13 @@ export default function App() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`group relative flex flex-1 flex-col items-center gap-1 pt-2.5 pb-2 text-xs font-semibold transition-colors ${
-                  isActive ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)] hover:text-[var(--color-text)]'
+                className={`group flex flex-1 flex-col items-center gap-1 pt-2.5 pb-1.5 text-[11px] font-semibold transition-colors ${
+                  isActive ? 'text-[var(--color-amber-deep)]' : 'text-[var(--color-muted)] hover:text-[var(--color-text)]'
                 }`}
               >
-                {isActive && (
-                  <span className="absolute top-0 size-1.5 rotate-45 bg-[var(--color-accent)]" />
-                )}
-                <TabIcon
-                  width={26}
-                  height={26}
-                  strokeWidth={isActive ? 2.1 : 1.75}
-                  className="transition-transform group-active:scale-90"
-                />
+                <span className={`${isActive ? 'sao-circle sao-circle-active' : 'sao-circle'} transition-transform group-active:scale-90`}>
+                  <TabIcon width={21} height={21} strokeWidth={isActive ? 2.2 : 1.9} />
+                </span>
                 <span className={isActive ? 'font-bold' : ''}>{tab.label}</span>
               </button>
             )
