@@ -164,6 +164,13 @@ export default function TodayTab() {
         </button>
       </section>
 
+      {/* 오늘 일정 (맨 위 · 달력과 공유 · 여기서도 추가/수정) */}
+      <TodayEvents
+        events={dayEvents}
+        onAdd={() => setEventEditing('new')}
+        onEdit={(event) => setEventEditing(event)}
+      />
+
       {/* 밀린 할 일 (오늘 볼 때만) */}
       {isToday && overdueTodos.length > 0 && (
         <OverdueTodos
@@ -173,13 +180,6 @@ export default function TodayTab() {
           onRemove={removeTodo}
         />
       )}
-
-      {/* 오늘 일정 (달력과 공유 · 여기서도 추가/수정) */}
-      <TodayEvents
-        events={dayEvents}
-        onAdd={() => setEventEditing('new')}
-        onEdit={(event) => setEventEditing(event)}
-      />
 
       <RoutineCard
         title="아침루틴"
