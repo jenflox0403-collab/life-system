@@ -83,7 +83,7 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
       {/* 아이젠하워 매트릭스 */}
       <section className="sao-card p-5">
         <h3 className="sao-title mb-1 font-bold">아이젠하워 매트릭스</h3>
-        <p className="mb-3 text-xs text-[var(--color-muted)]">완료 전 투두를 4분면으로 봅니다 · 긴급+중요는 오늘로 보내세요</p>
+        <p className="mb-3 text-xs text-[var(--color-muted)]">완료 전 To-Do를 4분면으로 봅니다 · 긴급+중요는 오늘로 보내세요</p>
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           {QUADRANTS.map((quad) => {
             const items = activeTodos.filter(quad.match)
@@ -120,7 +120,7 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
 
       {/* 투두 전체 목록 */}
       <section className="sao-card p-5">
-        <h3 className="sao-title mb-3 font-bold">투두 전체</h3>
+        <h3 className="sao-title mb-3 font-bold">To-Do 전체</h3>
         <form onSubmit={addTodo} className="mb-3 flex flex-col gap-2">
           <input
             value={todoText}
@@ -142,7 +142,7 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
                 urgent ? 'border-orange-400 bg-orange-50 font-bold text-orange-500' : 'border-black/10 text-[var(--color-muted)]'
               }`}
             >
-              🔥 긴급
+              긴급
             </button>
             <button
               type="button"
@@ -151,7 +151,7 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
                 important ? 'border-blue-400 bg-blue-50 font-bold text-blue-500' : 'border-black/10 text-[var(--color-muted)]'
               }`}
             >
-              ⭐ 중요
+              중요
             </button>
             <button type="submit" className="ml-auto sao-btn-primary px-4 py-1.5">추가</button>
           </div>

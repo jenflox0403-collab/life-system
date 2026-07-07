@@ -107,7 +107,7 @@ export default function RoutineCard({ title, emoji, items, checked, onToggle, on
 
       {isAllDone && !isEditing && (
         <p className="animate-bounce pt-3 text-center text-sm font-bold text-[var(--color-accent)]">
-          🎉 {title} 완료!
+          ✦ {title} 완료 ✦
         </p>
       )}
     </section>

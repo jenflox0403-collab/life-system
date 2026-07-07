@@ -36,13 +36,15 @@ body {
 }
 
 /* ===== SAO 시스템 창 패널 ===== */
+/* 거의 각진 모서리 + 바깥 흰 겹테두리 = 하늘 위에 떠 있는 게임 창 느낌 */
 .sao-card {
   position: relative;
-  border-radius: 10px;
-  border: 1px solid rgba(120, 130, 140, 0.25);
-  background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 55%, #f2f5f7 100%);
+  border-radius: 3px;
+  border: 1px solid rgba(110, 122, 133, 0.35);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 55%, #f1f4f6 100%);
   box-shadow:
-    0 6px 18px rgba(60, 75, 90, 0.12),
+    0 0 0 3px rgba(255, 255, 255, 0.55),
+    0 8px 22px rgba(60, 75, 90, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
   overflow: hidden;
 }
@@ -124,11 +126,21 @@ body {
 
 /* 아래에서 떠오르는 시트 (블록 편집/설정 창) */
 .sao-sheet {
-  border-radius: 18px 18px 0 0;
-  border: 1px solid rgba(120, 130, 140, 0.25);
+  border-radius: 8px 8px 0 0;
+  border: 1px solid rgba(110, 122, 133, 0.35);
   border-bottom: none;
   background: linear-gradient(180deg, #ffffff, #f4f7f9);
-  box-shadow: 0 -8px 30px rgba(60, 75, 90, 0.2);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.4),
+    0 -8px 30px rgba(60, 75, 90, 0.25);
+}
+
+/* 시트/카드 상단 중앙 제목 밑줄 (SAO 창 타이틀) */
+.sao-sheet > h2,
+.sao-sheet > h3 {
+  text-align: center;
+  border-bottom: 1.5px solid rgba(90, 100, 110, 0.4);
+  padding-bottom: 8px;
 }
 
 /* ===== SAO 영문 타이틀 서체 (기기 내장 폰트만 사용) ===== */

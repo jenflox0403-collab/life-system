@@ -2,7 +2,7 @@
 export default function Placeholder({ title, description }) {
   return (
     <section className="flex flex-col items-center justify-center gap-2 sao-card px-6 py-16 text-center">
-      <p className="text-3xl">🚧</p>
+      <p className="text-3xl text-[var(--color-amber)]">◆</p>
       <h2 className="text-base font-bold">{title}</h2>
       <p className="text-sm text-[var(--color-muted)]">{description}</p>
     </section>

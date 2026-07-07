@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { uid } from '../../lib/uid.js'
 
-// 이 파일은 "오늘 투두" 카드 담당
+// 이 파일은 "To-Do" 카드 담당
 // 우선순위 도트: 긴급+중요(빨강) / 중요(파랑) / 긴급(주황) / 둘 다 아님(회색)
 export function priorityColor(todo) {
   if (todo.urgent && todo.important) return '#e0426a'
@@ -38,7 +38,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
   return (
     <section className="sao-card p-5">
       <h3 className="sao-title mb-3 font-bold">
-        오늘 투두
+        To-Do
         <span className="ml-2 text-sm font-medium text-[var(--color-muted)]">{remaining}개 남음</span>
       </h3>
 
@@ -57,7 +57,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
               urgent ? 'border-orange-400 bg-orange-50 font-bold text-orange-500' : 'border-black/10 text-[var(--color-muted)]'
             }`}
           >
-            🔥 긴급
+            긴급
           </button>
           <button
             type="button"
@@ -66,7 +66,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
               important ? 'border-blue-400 bg-blue-50 font-bold text-blue-500' : 'border-black/10 text-[var(--color-muted)]'
             }`}
           >
-            ⭐ 중요
+            중요
           </button>
           <button type="submit" className="ml-auto sao-btn-primary px-5 py-1.5">
             추가
@@ -97,7 +97,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock }) {
                 title="타임블록으로 보내기"
                 className="rounded-lg px-2 py-1 text-xs text-[var(--color-muted)] hover:bg-black/5"
               >
-                ⏰ 블록
+                ▸ 블록
               </button>
             )}
             <button onClick={() => remove(todo.id)} className="px-1 text-black/20 hover:text-red-400">

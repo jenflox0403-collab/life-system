@@ -104,7 +104,7 @@ export default function CascadeGoalList({
               <p className={`text-[15px] ${goal.done ? 'text-[var(--color-muted)] line-through' : ''}`}>{goal.text}</p>
               {(goal.parentId || goal.criteria) && (
                 <p className="truncate text-xs text-[var(--color-muted)]">
-                  {goal.parentId && `🔗 ${parentText(goal.parentId) ?? '삭제된 목표'}`}
+                  {goal.parentId && `↳ ${parentText(goal.parentId) ?? '삭제된 목표'}`}
                   {goal.parentId && goal.criteria && ' · '}
                   {goal.criteria && `기준: ${goal.criteria}`}
                 </p>

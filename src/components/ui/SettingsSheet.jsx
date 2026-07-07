@@ -33,13 +33,13 @@ export default function SettingsSheet({ onClose }) {
             onClick={downloadBackup}
             className="sao-btn-primary py-3"
           >
-            📤 데이터 내보내기 (JSON 백업)
+            데이터 내보내기 (JSON 백업)
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
             className="rounded-xl border border-black/10 py-3 font-bold transition active:scale-[0.98]"
           >
-            📥 데이터 가져오기 (백업 복원)
+            데이터 가져오기 (백업 복원)
           </button>
           <input
             ref={fileInputRef}

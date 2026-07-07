@@ -103,7 +103,7 @@ export default function HabitsTab() {
                 }`}
               />
               {streakOf(habit.id) > 0 && (
-                <span className="shrink-0 text-xs font-bold text-orange-500">🔥 {streakOf(habit.id)}일</span>
+                <span className="shrink-0 text-xs font-bold text-[var(--color-amber-deep)]">✦ {streakOf(habit.id)}일 연속</span>
               )}
               <button
                 onClick={() => setHabits(habits.filter((h) => h.id !== habit.id))}
