@@ -60,7 +60,18 @@ export default function TodoRow({
         {showDate && (
           <span className="shrink-0 text-xs text-[var(--color-muted)]">{todo.date?.slice(5).replace('-', '/')}</span>
         )}
-        <span className="shrink-0 text-[11px] text-black/25">{expanded ? '▴' : '▾'}</span>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            setExpanded((v) => !v)
+          }}
+          aria-label={expanded ? '접기' : '펼치기'}
+          aria-expanded={expanded}
+          className="shrink-0 px-1 text-[11px] text-black/25"
+        >
+          {expanded ? '▴' : '▾'}
+        </button>
         <button
           onClick={(e) => {
             e.stopPropagation()

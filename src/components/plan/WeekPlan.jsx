@@ -24,6 +24,7 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
     if (!todoText.trim()) return
     onChangeTodos([...todos, { id: uid(), text: todoText.trim(), date: todoDate, urgent: false, important: false, done: false }])
     setTodoText('')
+    setSelectedDay(todoDate) // 추가한 할 일이 목록에 바로 보이도록 그날로 이동
   }
 
   function patchTodo(id, changes) {
@@ -112,7 +113,7 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
         </form>
 
         {(() => {
-          const visible = [...todos]
+          const visible = todos
             .filter((todo) => selectedDay === null || todo.date === selectedDay)
             .sort((a, b) => (a.date < b.date ? -1 : 1))
           if (visible.length === 0) {
