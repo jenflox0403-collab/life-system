@@ -59,15 +59,15 @@ export default function ContentSheet({ card, onSave, onDelete, onClose }) {
           />
         </label>
 
-        {/* 메모 */}
+        {/* 메모 / 대본 (넉넉하게, 아래 모서리 드래그로 더 키울 수 있음) */}
         <label className="mb-5 block">
-          <span className="mb-1 block text-sm font-medium text-[var(--color-muted)]">메모 (선택)</span>
+          <span className="mb-1 block text-sm font-medium text-[var(--color-muted)]">메모 · 대본 (선택)</span>
           <textarea
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
-            rows={2}
-            placeholder="메모"
-            className="w-full resize-none rounded-[5px] border border-black/10 px-3 py-2.5 outline-none focus:border-[var(--color-accent)]"
+            rows={8}
+            placeholder="대본이나 상세 메모를 자유롭게 적어요"
+            className="min-h-[10rem] w-full resize-y rounded-[5px] border border-black/10 px-3 py-2.5 leading-relaxed outline-none focus:border-[var(--color-accent)]"
           />
         </label>
 
