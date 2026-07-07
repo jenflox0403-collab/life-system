@@ -30,7 +30,7 @@ export default function EisenhowerMatrix({ todos, onSendToday, todayKey }) {
               return (
                 <div
                   key={cell.key}
-                  className="min-h-24 rounded-[5px] border p-2"
+                  className="min-h-28 rounded-[5px] border p-2"
                   style={{ borderColor: `${cell.color}55`, background: `${cell.color}0d` }}
                 >
                   <p className="mb-1 text-[13px] font-bold" style={{ color: cell.color }}>
