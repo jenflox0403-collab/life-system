@@ -1,5 +1,5 @@
 import { monthGridCells, todayKey } from '../../lib/date.js'
-import { eventColor, eventCoversDay } from '../../lib/eventTypes.js'
+import { eventColor } from '../../lib/eventTypes.js'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 const MAX_DOTS = 3 // 모바일 한 칸 최대 점 개수 (넘치면 +N)
@@ -7,14 +7,19 @@ const MAX_LINES = 3 // 데스크톱 한 칸 최대 텍스트 줄 (넘치면 +N)
 
 // 이 파일은 월간 달력 그리드 담당
 // 모바일: 날짜 + 일정 색 점 / 데스크톱: 날짜 + 일정 제목 텍스트
-// 더블클릭(PC)하면 그날 일정추가 팝업이 바로 뜸
+// 더블클릭(PC 전용)하면 그날 일정추가 팝업이 바로 뜸
 export default function MonthGrid({ year, monthIndex, events, selected, onSelectDay, onChangeMonth, onQuickAdd }) {
   const cells = monthGridCells(year, monthIndex)
   const today = todayKey()
 
-  // 여러 날 일정도 포함해서, 각 날짜를 덮는 일정 목록을 구함
+  // 그날 날짜의 일정 목록
   function eventsOn(key) {
-    return events.filter((event) => event.date && eventCoversDay(event, key))
+    return events.filter((event) => event.date === key)
+  }
+
+  // 더블클릭은 PC(마우스)에서만 — 모바일 더블탭은 무시
+  function handleDoubleClick(key) {
+    if (window.matchMedia('(min-width: 768px)').matches) onQuickAdd(key)
   }
 
   return (
@@ -55,7 +60,7 @@ export default function MonthGrid({ year, monthIndex, events, selected, onSelect
               key={cell.key}
               type="button"
               onClick={() => onSelectDay(isSelected ? null : cell.key)}
-              onDoubleClick={() => onQuickAdd(cell.key)}
+              onDoubleClick={() => handleDoubleClick(cell.key)}
               className={`flex aspect-square flex-col items-center justify-start gap-0.5 rounded-md pt-1 text-[12px] transition md:aspect-auto md:min-h-[92px] md:items-stretch md:p-1.5 ${
                 isSelected
                   ? 'bg-[var(--color-accent)] text-white'

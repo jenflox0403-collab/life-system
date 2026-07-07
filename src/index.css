@@ -28,6 +28,8 @@
   --evt-meeting: #4cc38a; /* 미팅 (초록) */
   --evt-personal: #e3c34a; /* 개인일정 (노랑) */
   --evt-delegate: #e07ab5; /* 위임사항 (핑크) */
+  --evt-season: #2fc4be; /* 시즌성 (민트) */
+  --evt-etc: #aeb6bd; /* 기타 (회색) */
 }
 
 html,

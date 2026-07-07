@@ -4,6 +4,7 @@ import { useStoredState } from '../../hooks/useStoredState.js'
 import { todayKey, formatKorean } from '../../lib/date.js'
 import RoutineCard from './RoutineCard.jsx'
 import OverdueTodos from './OverdueTodos.jsx'
+import TodayEvents from './TodayEvents.jsx'
 import TodoSection from './TodoSection.jsx'
 import TimeblockSection from './TimeblockSection.jsx'
 import BlockEditor from './BlockEditor.jsx'
@@ -38,6 +39,7 @@ export default function TodayTab() {
   const [routineLog, setRoutineLog] = useStoredState('routineLog', {})
   const [allTodos, setAllTodos] = useStoredState('todos', [])
   const [allBlocks, setAllBlocks] = useStoredState('timeblocks', {})
+  const [events] = useStoredState('events', []) // 달력에서 자동 로드 (읽기 전용)
   const [diary, setDiary] = useStoredState('diary', {})
   const [settings] = useStoredState('settings', {})
   const [editorState, setEditorState] = useState(null)
@@ -52,6 +54,8 @@ export default function TodayTab() {
   const dayTodos = allTodos.filter((todo) => todo.date === viewKey)
   // 밀린 할 일: 지난 날짜인데 아직 완료 안 한 것 (오늘 볼 때만 표시)
   const overdueTodos = allTodos.filter((todo) => !todo.done && todo.date < realToday)
+  // 오늘 일정: 달력에서 그날 날짜로 등록한 일정 (읽기 전용)
+  const dayEvents = events.filter((event) => event.date === viewKey)
   const dayBlocks = allBlocks[viewKey] ?? []
   const dayDiary = diary[viewKey]?.text ?? ''
 
@@ -149,6 +153,9 @@ export default function TodayTab() {
           onRemove={removeTodo}
         />
       )}
+
+      {/* 오늘 일정 (달력에서 자동 로드) */}
+      {dayEvents.length > 0 && <TodayEvents events={dayEvents} />}
 
       <RoutineCard
         title="아침루틴"

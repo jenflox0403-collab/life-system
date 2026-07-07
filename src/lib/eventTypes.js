@@ -7,6 +7,8 @@ export const EVENT_TYPES = [
   { id: 'meeting', label: '미팅', color: 'var(--evt-meeting)' },
   { id: 'personal', label: '개인일정', color: 'var(--evt-personal)' },
   { id: 'delegate', label: '위임사항', color: 'var(--evt-delegate)' },
+  { id: 'season', label: '시즌성', color: 'var(--evt-season)' },
+  { id: 'etc', label: '기타', color: 'var(--evt-etc)' },
 ]
 
 /** 유형 id로 정의 객체 찾기 (없으면 개인일정으로 처리) */
@@ -17,14 +19,4 @@ export function eventType(id) {
 /** 유형 id → 색 */
 export function eventColor(id) {
   return eventType(id).color
-}
-
-/**
- * 이 일정이 특정 날짜(key = "YYYY-MM-DD")를 포함하는지.
- * endDate가 없으면 하루짜리. 날짜 키는 문자열 비교로 정확히 대소 판정됨.
- */
-export function eventCoversDay(event, key) {
-  const start = event.date
-  const end = event.endDate || event.date
-  return start <= key && key <= end
 }

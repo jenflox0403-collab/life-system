@@ -1,17 +1,9 @@
 import { todayKey } from '../../lib/date.js'
-import { eventType, eventColor, eventCoversDay } from '../../lib/eventTypes.js'
+import { eventType, eventColor } from '../../lib/eventTypes.js'
 
 // "2026-07-07" → "7/7"
 function shortDate(key) {
   return key.slice(5).replace('-', '/')
-}
-
-// 일정 기간 표기 (여러 날이면 "7/7–7/9")
-function rangeLabel(event) {
-  if (event.endDate && event.endDate > event.date) {
-    return `${shortDate(event.date)}–${shortDate(event.endDate)}`
-  }
-  return shortDate(event.date)
 }
 
 // 이 파일은 일정 목록 담당
@@ -21,8 +13,8 @@ export default function EventList({ events, selected, journalText, onEditEvent, 
 
   const visible = (
     selected
-      ? events.filter((e) => eventCoversDay(e, selected))
-      : events.filter((e) => (e.endDate || e.date) >= today)
+      ? events.filter((e) => e.date === selected)
+      : events.filter((e) => e.date >= today)
   ).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
 
   const heading = selected ? `${shortDate(selected)} 일정` : '다가오는 일정'
@@ -59,7 +51,7 @@ export default function EventList({ events, selected, journalText, onEditEvent, 
                       {event.memo && <span className="truncate text-[var(--color-muted)]">{event.memo}</span>}
                     </div>
                   </div>
-                  <span className="shrink-0 text-xs text-[var(--color-muted)]">{rangeLabel(event)}</span>
+                  <span className="shrink-0 text-xs text-[var(--color-muted)]">{shortDate(event.date)}</span>
                 </button>
               </li>
             )
