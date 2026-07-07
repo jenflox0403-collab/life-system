@@ -6,8 +6,8 @@ import RoutineCard from './RoutineCard.jsx'
 import TodoSection from './TodoSection.jsx'
 import TimeblockSection from './TimeblockSection.jsx'
 import BlockEditor from './BlockEditor.jsx'
+import DiarySection from './DiarySection.jsx'
 
-// 기본 루틴 (처음 쓸 때 제공, 편집 가능)
 const DEFAULT_ROUTINES = {
   morning: [
     { id: 'm1', name: '기상', minutes: 5 },
@@ -23,66 +23,75 @@ const DEFAULT_ROUTINES = {
   ],
 }
 
-// 이 파일은 "오늘" 탭 본체 담당 — 루틴 + 타임블록 + 투두 조립
+/** 날짜 키에 하루 더하기 */
+function addDays(key, delta) {
+  const [y, m, d] = key.split('-').map(Number)
+  return todayKey(new Date(y, m - 1, d + delta))
+}
+
+// 이 파일은 "오늘" 탭 본체 담당 — 날짜 이동 + 루틴 + To-Do + 타임블록 + 일기
 export default function TodayTab() {
-  const today = todayKey()
+  const realToday = todayKey()
+  const [viewKey, setViewKey] = useState(realToday)
   const [routines, setRoutines] = useStoredState('routines', DEFAULT_ROUTINES)
   const [routineLog, setRoutineLog] = useStoredState('routineLog', {})
   const [allTodos, setAllTodos] = useStoredState('todos', [])
   const [allBlocks, setAllBlocks] = useStoredState('timeblocks', {})
+  const [diary, setDiary] = useStoredState('diary', {})
   const [settings] = useStoredState('settings', {})
-  const [editorState, setEditorState] = useState(null) // null | 블록 초기값 객체
+  const [editorState, setEditorState] = useState(null)
 
-  const dayStart = settings.timeblockStart ?? 360 // 06:00
-  const dayEnd = settings.timeblockEnd ?? 1440 // 24:00
+  const dayStart = settings.timeblockStart ?? 360
+  const dayEnd = settings.timeblockEnd ?? 1440
+  const isToday = viewKey === realToday
+  const [vy, vm, vd] = viewKey.split('-').map(Number)
+  const viewDate = new Date(vy, vm - 1, vd)
 
-  const todayLog = routineLog[today] ?? { morning: {}, evening: {} }
-  const todayTodos = allTodos.filter((todo) => todo.date === today)
-  const todayBlocks = allBlocks[today] ?? []
+  const dayLog = routineLog[viewKey] ?? { morning: {}, evening: {} }
+  const dayTodos = allTodos.filter((todo) => todo.date === viewKey)
+  const dayBlocks = allBlocks[viewKey] ?? []
+  const dayDiary = diary[viewKey]?.text ?? ''
 
   function toggleRoutine(type, itemId) {
-    const typeLog = { ...todayLog[type], [itemId]: !todayLog[type]?.[itemId] }
-    setRoutineLog({ ...routineLog, [today]: { ...todayLog, [type]: typeLog } })
+    const typeLog = { ...dayLog[type], [itemId]: !dayLog[type]?.[itemId] }
+    setRoutineLog({ ...routineLog, [viewKey]: { ...dayLog, [type]: typeLog } })
   }
 
-  function changeTodos(nextTodayTodos) {
-    const others = allTodos.filter((todo) => todo.date !== today)
-    setAllTodos([...others, ...nextTodayTodos.map((todo) => ({ ...todo, date: today }))])
+  function changeTodos(nextDayTodos) {
+    const others = allTodos.filter((todo) => todo.date !== viewKey)
+    setAllTodos([...others, ...nextDayTodos.map((todo) => ({ ...todo, date: viewKey }))])
+  }
+
+  /** 미루기: 이 투두를 다음날로 넘김 (다음날 To-Do에 나타남) */
+  function deferTodo(todo) {
+    setAllTodos(allTodos.map((t) => (t.id === todo.id ? { ...t, date: addDays(viewKey, 1), done: false } : t)))
   }
 
   function saveBlock(block) {
     const id = block.id ?? uid()
-    const rest = todayBlocks.filter((b) => b.id !== block.id)
-    setAllBlocks({ ...allBlocks, [today]: [...rest, { ...block, id }] })
+    const rest = dayBlocks.filter((b) => b.id !== block.id)
+    setAllBlocks({ ...allBlocks, [viewKey]: [...rest, { ...block, id }] })
     setEditorState(null)
   }
 
   function deleteBlock(id) {
-    setAllBlocks({ ...allBlocks, [today]: todayBlocks.filter((b) => b.id !== id) })
+    setAllBlocks({ ...allBlocks, [viewKey]: dayBlocks.filter((b) => b.id !== id) })
     setEditorState(null)
   }
 
   function toggleBlockDone(id) {
-    setAllBlocks({
-      ...allBlocks,
-      [today]: todayBlocks.map((b) => (b.id === id ? { ...b, done: !b.done } : b)),
-    })
+    setAllBlocks({ ...allBlocks, [viewKey]: dayBlocks.map((b) => (b.id === id ? { ...b, done: !b.done } : b)) })
   }
 
   function copyYesterday() {
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    const yBlocks = allBlocks[todayKey(yesterday)] ?? []
+    const yBlocks = allBlocks[addDays(viewKey, -1)] ?? []
     if (yBlocks.length === 0) return
     const copied = yBlocks.map((b) => ({ ...b, id: uid(), done: false, todoId: undefined }))
-    setAllBlocks({ ...allBlocks, [today]: [...todayBlocks, ...copied] })
+    setAllBlocks({ ...allBlocks, [viewKey]: [...dayBlocks, ...copied] })
   }
 
-  const yesterdayDate = new Date()
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1)
-  const hasYesterday = (allBlocks[todayKey(yesterdayDate)] ?? []).length > 0
+  const hasYesterday = (allBlocks[addDays(viewKey, -1)] ?? []).length > 0
 
-  /** 투두 → 타임블록: 현재 시각 근처 30분 블록으로 에디터 열기 */
   function sendTodoToTimeblock(todo) {
     const now = new Date()
     const rounded = Math.min(
@@ -94,26 +103,45 @@ export default function TodayTab() {
 
   return (
     <div className="flex flex-col gap-4">
-      <section className="sao-card p-5">
-        <p className="text-sm text-[var(--color-muted)]">오늘</p>
-        <h2 className="text-xl font-bold">{formatKorean()}</h2>
+      {/* 날짜 이동 */}
+      <section className="sao-card flex items-center justify-between p-4">
+        <button onClick={() => setViewKey(addDays(viewKey, -1))} className="sao-circle !h-9 !w-9 text-[var(--color-muted)]" aria-label="전날">
+          ‹
+        </button>
+        <div className="text-center">
+          <p className="text-xs text-[var(--color-muted)]">{isToday ? '오늘' : viewKey.slice(0, 4) + '년'}</p>
+          <h2 className="text-xl font-bold">{formatKorean(viewDate)}</h2>
+          {!isToday && (
+            <button onClick={() => setViewKey(realToday)} className="mt-0.5 text-xs font-bold text-[var(--color-accent)]">
+              오늘로 돌아가기
+            </button>
+          )}
+        </div>
+        <button onClick={() => setViewKey(addDays(viewKey, 1))} className="sao-circle !h-9 !w-9 text-[var(--color-muted)]" aria-label="다음날">
+          ›
+        </button>
       </section>
 
       <RoutineCard
         title="아침루틴"
-        emoji="🌅"
         items={routines.morning}
-        checked={todayLog.morning ?? {}}
+        checked={dayLog.morning ?? {}}
         onToggle={(id) => toggleRoutine('morning', id)}
         onChangeItems={(items) => setRoutines({ ...routines, morning: items })}
       />
 
-      <TodoSection todos={todayTodos} onChange={changeTodos} onSendToTimeblock={sendTodoToTimeblock} />
+      <TodoSection
+        todos={dayTodos}
+        onChange={changeTodos}
+        onSendToTimeblock={sendTodoToTimeblock}
+        onDefer={deferTodo}
+      />
 
       <TimeblockSection
-        blocks={todayBlocks}
+        blocks={dayBlocks}
         dayStart={dayStart}
         dayEnd={dayEnd}
+        isToday={isToday}
         onEditBlock={(block) => setEditorState(block)}
         onCreateAt={(minute) => setEditorState({ start: minute, end: Math.min(minute + 30, dayEnd) })}
         onToggleDone={toggleBlockDone}
@@ -123,11 +151,15 @@ export default function TodayTab() {
 
       <RoutineCard
         title="저녁 마감루틴"
-        emoji="🌙"
         items={routines.evening}
-        checked={todayLog.evening ?? {}}
+        checked={dayLog.evening ?? {}}
         onToggle={(id) => toggleRoutine('evening', id)}
         onChangeItems={(items) => setRoutines({ ...routines, evening: items })}
+      />
+
+      <DiarySection
+        value={dayDiary}
+        onChange={(text) => setDiary({ ...diary, [viewKey]: { ...diary[viewKey], text } })}
       />
 
       {editorState && (

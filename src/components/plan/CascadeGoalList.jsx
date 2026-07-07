@@ -83,7 +83,7 @@ export default function CascadeGoalList({
               </option>
             ))}
           </select>
-          <button type="submit" className="sao-btn-primary px-4 py-2">추가</button>
+          <button type="submit" className="add-btn px-4 py-2">추가</button>
         </div>
       </form>
 

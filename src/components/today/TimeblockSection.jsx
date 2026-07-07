@@ -9,6 +9,7 @@ export default function TimeblockSection({
   blocks,
   dayStart,
   dayEnd,
+  isToday = true,
   onEditBlock,
   onCreateAt,
   onToggleDone,
@@ -65,7 +66,7 @@ export default function TimeblockSection({
       <div className="overflow-hidden rounded-xl border border-black/15">
         {hours.map((rowStart) => {
           const rowEnd = rowStart + 60
-          const isNowRow = nowMinutes >= rowStart && nowMinutes < rowEnd
+          const isNowRow = isToday && nowMinutes >= rowStart && nowMinutes < rowEnd
           // 이 행에 걸쳐 있는 블록 조각들 (제목은 블록이 시작하는 행에만 표시)
           const segments = blocks
             .filter((b) => b.start < rowEnd && b.end > rowStart)

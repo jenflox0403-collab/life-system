@@ -40,22 +40,21 @@ body {
 .sao-card {
   position: relative;
   border-radius: 3px;
-  border: 1px solid rgba(110, 122, 133, 0.35);
-  background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 55%, #f1f4f6 100%);
+  border: 1px solid rgba(110, 122, 133, 0.3);
+  background: #ffffff;
   box-shadow:
-    0 0 0 3px rgba(255, 255, 255, 0.55),
-    0 8px 22px rgba(60, 75, 90, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 0 0 3px rgba(255, 255, 255, 0.5),
+    0 6px 16px rgba(60, 75, 90, 0.1);
   overflow: hidden;
 }
 
-/* 카드 상단의 은은한 헤더 밴드 (Invite 창 상단 느낌) */
+/* 카드 상단 아주 옅은 헤더 라인 (SAO 창 상단) */
 .sao-card::before {
   content: '';
   position: absolute;
   inset: 0 0 auto 0;
-  height: 42px;
-  background: linear-gradient(180deg, rgba(160, 172, 182, 0.14), rgba(160, 172, 182, 0));
+  height: 40px;
+  background: rgba(150, 162, 172, 0.05);
   pointer-events: none;
 }
 
@@ -72,7 +71,7 @@ body {
   vertical-align: 1.5px;
 }
 
-/* ===== SAO 원형 메뉴 버튼 (탭바) ===== */
+/* ===== SAO 원형 메뉴 버튼 (탭바) — 그라데이션 없이 플랫 ===== */
 .sao-circle {
   display: flex;
   align-items: center;
@@ -80,31 +79,28 @@ body {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 1px solid rgba(120, 130, 140, 0.22);
-  background: linear-gradient(180deg, #f6f8fa, #e6eaee);
+  border: 1px solid rgba(120, 130, 140, 0.2);
+  background: #eef1f4;
   color: #a2aab2;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(60, 75, 90, 0.14);
   transition: all 0.15s ease;
 }
 .sao-circle-active {
   border-color: transparent;
-  background: linear-gradient(180deg, #edb84f, #d99a29);
+  background: var(--color-amber);
   color: #fff;
-  /* 흰 틈 + 노란 겹테두리 = SAO 아이콘 링 */
+  /* 흰 틈 + 노란 겹테두리 = SAO 아이콘 링 (플랫) */
   box-shadow:
     0 0 0 2px #fdfdfd,
-    0 0 0 3.5px var(--color-amber),
-    0 2px 8px rgba(227, 169, 60, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 0 0 3.5px var(--color-amber);
 }
 
 /* ===== 버튼 ===== */
+/* 확인·저장용 파랑 버튼 (플랫, 그라데이션 최소화) */
 .sao-btn-primary {
-  border-radius: 9999px;
-  background: linear-gradient(180deg, #5fabd6, #3f8cba);
+  border-radius: 5px;
+  background: var(--color-accent);
   color: #fff;
   font-weight: 700;
-  box-shadow: 0 3px 10px rgba(74, 155, 201, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.45);
   transition: transform 0.1s, filter 0.15s;
 }
 .sao-btn-primary:active {
@@ -112,34 +108,76 @@ body {
   filter: brightness(0.95);
 }
 
+/* 추가용 무채색 버튼 (심플, 시선 안 뺏김) */
+.add-btn {
+  border-radius: 5px;
+  border: 1px solid rgba(110, 122, 133, 0.28);
+  background: #eef1f4;
+  color: #6b7580;
+  font-weight: 700;
+  transition: background 0.12s, transform 0.1s;
+}
+.add-btn:hover {
+  background: #e5e9ed;
+}
+.add-btn:active {
+  transform: scale(0.97);
+}
+
 .sao-btn-danger {
-  border-radius: 9999px;
-  border: 1.5px solid rgba(224, 66, 106, 0.5);
+  border-radius: 5px;
+  border: 1.5px solid rgba(201, 83, 110, 0.5);
   color: var(--color-danger);
   font-weight: 700;
-  background: rgba(224, 66, 106, 0.06);
+  background: rgba(201, 83, 110, 0.06);
   transition: transform 0.1s;
 }
 .sao-btn-danger:active {
   transform: scale(0.97);
 }
 
-/* 아래에서 떠오르는 시트 (블록 편집/설정 창) */
-.sao-sheet {
-  border-radius: 8px 8px 0 0;
-  border: 1px solid rgba(110, 122, 133, 0.35);
-  border-bottom: none;
-  background: linear-gradient(180deg, #ffffff, #f4f7f9);
-  box-shadow:
-    0 0 0 3px rgba(255, 255, 255, 0.4),
-    0 -8px 30px rgba(60, 75, 90, 0.25);
+/* 작은 토글 칩 (긴급/중요/내일로/블록 등) */
+.chip {
+  border-radius: 4px;
+  border: 1px solid rgba(110, 122, 133, 0.28);
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-muted);
+  background: #fff;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.chip:active {
+  transform: scale(0.95);
 }
 
-/* 시트/카드 상단 중앙 제목 밑줄 (SAO 창 타이틀) */
+/* 아래에서 떠오르는 시트 (설정 창) */
+.sao-sheet {
+  border-radius: 8px 8px 0 0;
+  border: 1px solid rgba(110, 122, 133, 0.3);
+  border-bottom: none;
+  background: #ffffff;
+  box-shadow: 0 -6px 24px rgba(60, 75, 90, 0.2);
+}
+
+/* 화면 중앙에 뜨는 모달 (타임블록 편집 등) */
+.sao-modal {
+  border-radius: 6px;
+  border: 1px solid rgba(110, 122, 133, 0.3);
+  background: #ffffff;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.4),
+    0 12px 40px rgba(60, 75, 90, 0.3);
+}
+
+/* 시트/모달 상단 중앙 제목 밑줄 (SAO 창 타이틀) */
 .sao-sheet > h2,
-.sao-sheet > h3 {
+.sao-sheet > h3,
+.sao-modal > h2,
+.sao-modal > h3 {
   text-align: center;
-  border-bottom: 1.5px solid rgba(90, 100, 110, 0.4);
+  border-bottom: 1.5px solid rgba(90, 100, 110, 0.35);
   padding-bottom: 8px;
 }
 

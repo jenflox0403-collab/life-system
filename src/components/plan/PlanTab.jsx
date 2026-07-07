@@ -42,10 +42,8 @@ export default function PlanTab() {
           <button
             key={tab.id}
             onClick={() => setSubTab(tab.id)}
-            className={`flex-1 rounded-lg py-2 text-sm font-bold transition ${
-              subTab === tab.id
-                ? 'bg-gradient-to-b from-[#edb84f] to-[#d99a29] text-white shadow-sm'
-                : 'text-[var(--color-muted)]'
+            className={`flex-1 rounded-[5px] py-2 text-sm font-bold transition ${
+              subTab === tab.id ? 'bg-[var(--color-accent)] text-white' : 'text-[var(--color-muted)]'
             }`}
           >
             {tab.label}

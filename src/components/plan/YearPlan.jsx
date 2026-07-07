@@ -48,7 +48,7 @@ export default function YearPlan({ year, goals, meta, onChangeGoals, onChangeMet
             placeholder='"나는 ~할 것이다"'
             className="min-w-0 flex-1 rounded-xl border border-black/10 px-3 py-2.5 outline-none focus:border-[var(--color-accent)]"
           />
-          <button type="submit" className="sao-btn-primary px-4 py-2">추가</button>
+          <button type="submit" className="add-btn px-4 py-2">추가</button>
         </form>
         <ul className="flex flex-col gap-1.5">
           {(meta.declarations ?? []).map((decl) => (
@@ -98,7 +98,7 @@ export default function YearPlan({ year, goals, meta, onChangeGoals, onChangeMet
               placeholder="측정 지표 (예: 구독자 수)"
               className="min-w-0 flex-1 rounded-xl border border-black/10 px-3 py-2.5 text-sm outline-none focus:border-[var(--color-accent)]"
             />
-            <button type="submit" className="sao-btn-primary px-4 py-2">추가</button>
+            <button type="submit" className="add-btn px-4 py-2">추가</button>
           </div>
         </form>
 

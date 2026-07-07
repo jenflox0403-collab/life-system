@@ -24,9 +24,9 @@ export default function BlockEditor({ initial, dayStart, dayEnd, onSave, onDelet
   }
 
   return (
-    <div className="fixed inset-0 z-20 flex items-end justify-center bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div
-        className="pb-safe w-full max-w-5xl sao-sheet p-6"
+        className="sao-modal w-full max-w-md p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <h3 className="sao-title mb-4 text-lg font-bold">{initial.id ? '블록 수정' : '새 타임블록'}</h3>
