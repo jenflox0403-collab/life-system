@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { uid } from '../../lib/uid.js'
 import { useStoredState } from '../../hooks/useStoredState.js'
 import { todayKey, formatKorean } from '../../lib/date.js'
+import RewardBar from './RewardBar.jsx'
 import RoutineCard from './RoutineCard.jsx'
 import OverdueTodos from './OverdueTodos.jsx'
 import TodayEvents from './TodayEvents.jsx'
@@ -42,6 +43,9 @@ export default function TodayTab() {
   const [allBlocks, setAllBlocks] = useStoredState('timeblocks', {})
   const [events, setEvents] = useStoredState('events', []) // 달력과 공유 (여기서 추가·수정 가능)
   const [diary, setDiary] = useStoredState('diary', {})
+  const [habitLog] = useStoredState('habitLog', {}) // 보상 카드 XP 계산용 (읽기 전용)
+  const [goals] = useStoredState('goals', {}) // 오늘의 한 마디용 (읽기 전용)
+  const [sosData] = useStoredState('sos', {}) // 앵커·버텨낸 기록 (읽기 전용)
   const [settings] = useStoredState('settings', {})
   const [editorState, setEditorState] = useState(null)
   const [eventEditing, setEventEditing] = useState(null) // null=닫힘, 'new'=추가, 객체=수정
@@ -163,6 +167,19 @@ export default function TodayTab() {
           ›
         </button>
       </section>
+
+      {/* 게임화 보상 카드 (오늘 볼 때만) — 레벨·XP·오늘 클리어 게이지·스트릭 */}
+      {isToday && (
+        <RewardBar
+          todos={allTodos}
+          routineLog={routineLog}
+          timeblocks={allBlocks}
+          habitLog={habitLog}
+          surviveLog={sosData.surviveLog ?? {}}
+          goals={goals}
+          sos={sosData}
+        />
+      )}
 
       {/* 오늘 일정 (맨 위 · 달력과 공유 · 여기서도 추가/수정) */}
       <TodayEvents

@@ -252,3 +252,21 @@ body {
 .sos-enter {
   animation: sos-pop-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* ===== 게임화 (오늘 클리어 축하) ===== */
+@keyframes reward-pop {
+  0% { opacity: 0; transform: scale(0.6); }
+  60% { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes reward-sparkle {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+.reward-pop {
+  animation: reward-pop 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reward-sparkle {
+  display: inline-block;
+  animation: reward-sparkle 1.4s ease-in-out infinite;
+}
