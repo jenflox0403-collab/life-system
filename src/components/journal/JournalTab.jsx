@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import DiaryBoard from './DiaryBoard.jsx'
 import PrayerBoard from './PrayerBoard.jsx'
+import IdeaBoard from './IdeaBoard.jsx'
 
-// 이 파일은 "기록" 탭 담당 — 하위 탭 2개(일기 / 기도)
+// 이 파일은 "기록" 탭 담당 — 하위 탭 3개(일기 / 기도 / 아이디어)
 const SUBTABS = [
   { id: 'diary', label: '일기' },
   { id: 'prayer', label: '기도' },
+  { id: 'idea', label: '아이디어' },
 ]
 
 export default function JournalTab() {
@@ -29,6 +31,7 @@ export default function JournalTab() {
 
       {sub === 'diary' && <DiaryBoard />}
       {sub === 'prayer' && <PrayerBoard />}
+      {sub === 'idea' && <IdeaBoard />}
     </div>
   )
 }
