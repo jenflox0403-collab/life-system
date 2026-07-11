@@ -4,12 +4,14 @@ import { monthKey, quarterKey, weekKey } from '../../lib/date.js'
 import YearPlan from './YearPlan.jsx'
 import CascadeGoalList from './CascadeGoalList.jsx'
 import WeekPlan from './WeekPlan.jsx'
+import Mandalart from './Mandalart.jsx'
 
 const SUB_TABS = [
   { id: 'year', label: '연간' },
   { id: 'quarter', label: '분기' },
   { id: 'month', label: '월간' },
   { id: 'week', label: '주간' },
+  { id: 'mandal', label: '만다라트' },
 ]
 
 // 이 파일은 "계획" 탭 본체 담당 — 연간→분기→월간→주간 캐스케이드
@@ -93,6 +95,8 @@ export default function PlanTab() {
           onChangeTodos={setTodos}
         />
       )}
+
+      {subTab === 'mandal' && <Mandalart />}
     </div>
   )
 }

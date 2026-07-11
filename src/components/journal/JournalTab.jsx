@@ -3,15 +3,15 @@ import DiaryBoard from './DiaryBoard.jsx'
 import PrayerBoard from './PrayerBoard.jsx'
 import IdeaBoard from './IdeaBoard.jsx'
 
-// 이 파일은 "기록" 탭 담당 — 하위 탭 3개(일기 / 기도 / 아이디어)
+// 이 파일은 "기록" 탭 담당 — 하위 탭 3개(아이디어 / 일기 / 기도)
 const SUBTABS = [
+  { id: 'idea', label: '아이디어' },
   { id: 'diary', label: '일기' },
   { id: 'prayer', label: '기도' },
-  { id: 'idea', label: '아이디어' },
 ]
 
 export default function JournalTab() {
-  const [sub, setSub] = useState('diary')
+  const [sub, setSub] = useState('idea')
 
   return (
     <div className="flex flex-col gap-4">
