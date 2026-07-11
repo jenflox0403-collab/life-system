@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- 앱 아이콘: SAO 시스템 창 느낌 — 하늘 그라데이션 + 흰 원 + 노란 다이아몬드 -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e7eef5"/>
+      <stop offset="55%" stop-color="#cfdde9"/>
+      <stop offset="100%" stop-color="#b9cfe2"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#sky)"/>
+  <circle cx="256" cy="256" r="150" fill="#ffffff" stroke="#e3a93c" stroke-width="10"/>
+  <circle cx="256" cy="256" r="170" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="8"/>
+  <rect x="256" y="256" width="124" height="124" rx="14" fill="#e3a93c" transform="rotate(45 256 256) translate(-62 -62)"/>
+</svg>

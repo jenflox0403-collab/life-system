@@ -1,0 +1,17 @@
+{
+  "name": "라이프 시스템",
+  "short_name": "라이프",
+  "description": "개인 인생 관리 대시보드 — 루틴·할 일·타임블록·습관·콘텐츠·기록",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#e7eef5",
+  "background_color": "#e7eef5",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
