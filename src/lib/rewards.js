@@ -10,6 +10,7 @@ export const XP = {
   routineItem: 5, // 루틴 항목 체크
   timeblock: 10, // 타임블록 완료
   habit: 10, // 습관 체크
+  diary: 10, // 일기 작성
   survive: 20, // 충동 버텨냄 (SOS 타이머 완주)
 }
 
@@ -18,7 +19,7 @@ export const DAILY_TARGET = 80
 
 /** 특정 날짜에 번 XP (충동 버텨냄은 월 단위 기록이라 여기엔 미포함) */
 export function xpForDay(dateKey, data) {
-  const { todos = [], routineLog = {}, timeblocks = {}, habitLog = {} } = data
+  const { todos = [], routineLog = {}, timeblocks = {}, habitLog = {}, diary = {} } = data
   let xp = 0
   xp += todos.filter((t) => t.date === dateKey && t.done).length * XP.todo
   const dayLog = routineLog[dateKey] ?? {}
@@ -27,6 +28,7 @@ export function xpForDay(dateKey, data) {
   }
   xp += (timeblocks[dateKey] ?? []).filter((b) => b.done).length * XP.timeblock
   xp += Object.values(habitLog[dateKey] ?? {}).filter(Boolean).length * XP.habit
+  if ((diary[dateKey]?.text ?? '').trim()) xp += XP.diary
   return xp
 }
 
@@ -37,6 +39,7 @@ export function totalXp(data) {
   for (const key of Object.keys(data.routineLog ?? {})) dates.add(key)
   for (const key of Object.keys(data.timeblocks ?? {})) dates.add(key)
   for (const key of Object.keys(data.habitLog ?? {})) dates.add(key)
+  for (const key of Object.keys(data.diary ?? {})) dates.add(key)
 
   let xp = 0
   for (const date of dates) xp += xpForDay(date, data)

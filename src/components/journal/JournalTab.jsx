@@ -1,6 +1,34 @@
-import Placeholder from '../ui/Placeholder.jsx'
+import { useState } from 'react'
+import DiaryBoard from './DiaryBoard.jsx'
+import PrayerBoard from './PrayerBoard.jsx'
 
-// 이 파일은 "기록" 탭 담당 (5단계에서 본격 개발)
+// 이 파일은 "기록" 탭 담당 — 하위 탭 2개(일기 / 기도)
+const SUBTABS = [
+  { id: 'diary', label: '일기' },
+  { id: 'prayer', label: '기도' },
+]
+
 export default function JournalTab() {
-  return <Placeholder title="기록 탭 준비 중" description="일기와 기도제목 기록이 들어와요." />
+  const [sub, setSub] = useState('diary')
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-1.5">
+        {SUBTABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setSub(tab.id)}
+            className="chip"
+            style={tab.id === sub ? { borderColor: '#4a9bc9', background: 'rgba(74,155,201,0.13)', color: '#3f8cba' } : {}}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {sub === 'diary' && <DiaryBoard />}
+      {sub === 'prayer' && <PrayerBoard />}
+    </div>
+  )
 }

@@ -175,6 +175,7 @@ export default function TodayTab() {
           routineLog={routineLog}
           timeblocks={allBlocks}
           habitLog={habitLog}
+          diary={diary}
           surviveLog={sosData.surviveLog ?? {}}
           goals={goals}
           sos={sosData}
@@ -235,7 +236,9 @@ export default function TodayTab() {
 
       <DiarySection
         value={dayDiary}
+        mood={diary[viewKey]?.mood ?? ''}
         onChange={(text) => setDiary({ ...diary, [viewKey]: { ...diary[viewKey], text } })}
+        onChangeMood={(mood) => setDiary({ ...diary, [viewKey]: { ...diary[viewKey], mood } })}
       />
 
       {editorState && (
