@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useStoredState } from '../../hooks/useStoredState.js'
 
 // 이 파일은 만다라트 플래너 담당 (계획 탭 하위)
@@ -173,7 +173,18 @@ export default function Mandalart() {
 }
 
 // 만다라트 한 칸 (바로 입력, 자동 저장)
+// 텍스트가 상하좌우 중앙에 오도록: 칸(flex 중앙정렬) 안에 내용 높이만큼만 자라는 입력창
 function Cell({ value, onChange, placeholder, tone }) {
+  const ref = useRef(null)
+
+  // 입력창 높이를 내용에 딱 맞게 → 바깥 flex가 세로 중앙에 배치
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [value])
+
   const toneClass =
     tone === 'core'
       ? 'border-[var(--color-amber)] bg-[var(--color-amber)]/15 font-bold'
@@ -181,12 +192,15 @@ function Cell({ value, onChange, placeholder, tone }) {
         ? 'border-[var(--color-accent)]/50 bg-[var(--color-accent)]/10 font-bold'
         : 'border-black/10 bg-white'
   return (
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      rows={1}
-      className={`aspect-square w-full resize-none rounded-[4px] border p-1 text-center text-[10px] leading-tight outline-none focus:border-[var(--color-accent)] md:text-[11px] ${toneClass}`}
-    />
+    <div className={`flex aspect-square items-center rounded-[4px] border p-0.5 focus-within:border-[var(--color-accent)] ${toneClass}`}>
+      <textarea
+        ref={ref}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={1}
+        className="max-h-full w-full resize-none overflow-hidden bg-transparent text-center text-[10px] leading-tight outline-none md:text-[11px]"
+      />
+    </div>
   )
 }
