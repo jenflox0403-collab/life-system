@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { URGE_DURATIONS } from '../../lib/sosContent.js'
 
 const R = 54
@@ -11,15 +11,24 @@ function mmss(sec) {
 }
 
 // 이 파일은 충동 지연 타이머 담당 — 충동은 파도, 이 시간만 지나가게 두기(urge surfing)
-export default function UrgeTimer({ onClose }) {
+export default function UrgeTimer({ onClose, onSurvived }) {
   const [total, setTotal] = useState(null) // 선택 전엔 null
   const [left, setLeft] = useState(0)
+  const survivedRef = useRef(false) // 완주 기록은 한 번만
 
   useEffect(() => {
     if (total === null || left <= 0) return
     const timer = setTimeout(() => setLeft((s) => s - 1), 1000)
     return () => clearTimeout(timer)
   }, [left, total])
+
+  // 끝까지 버티면 "버텨낸 기록"에 1회 적립
+  useEffect(() => {
+    if (total !== null && left <= 0 && !survivedRef.current) {
+      survivedRef.current = true
+      onSurvived?.()
+    }
+  }, [left, total, onSurvived])
 
   // 시간 선택 화면
   if (total === null) {

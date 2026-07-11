@@ -20,6 +20,7 @@ export const STORE_KEYS = [
   'diary',
   'prayers',
   'pomodoroLog',
+  'sos',
 ]
 
 /** 데이터 불러오기. 없거나 깨져 있으면 fallback을 돌려줌 */
