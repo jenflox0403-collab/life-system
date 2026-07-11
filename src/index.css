@@ -225,3 +225,30 @@ body {
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* ===== SOS (충동 대응) ===== */
+@keyframes sos-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes sos-pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* FAB가 조용히 숨쉬듯 — 위급할 때 눈에 띄되 자극적이지 않게 */
+@keyframes sos-breathe {
+  0%, 100% { box-shadow: 0 6px 20px rgba(201, 83, 110, 0.35); }
+  50% { box-shadow: 0 6px 28px rgba(201, 83, 110, 0.55); }
+}
+
+/* 전체화면 진정 배경 (저채도 블루 그라데이션) */
+.sos-overlay {
+  background: linear-gradient(160deg, #eaf1f7 0%, #d6e4f0 55%, #c4d8ea 100%);
+  animation: sos-fade-in 0.25s ease-out;
+}
+.sos-fab {
+  animation: sos-breathe 3.6s ease-in-out infinite;
+}
+.sos-enter {
+  animation: sos-pop-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}

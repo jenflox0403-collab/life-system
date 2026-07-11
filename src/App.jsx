@@ -7,6 +7,8 @@ import ContentTab from './components/content/ContentTab.jsx'
 import JournalTab from './components/journal/JournalTab.jsx'
 import TimerTab from './components/timer/TimerTab.jsx'
 import SettingsSheet from './components/ui/SettingsSheet.jsx'
+import SosButton from './components/sos/SosButton.jsx'
+import SosOverlay from './components/sos/SosOverlay.jsx'
 import {
   IconToday,
   IconPlan,
@@ -32,6 +34,9 @@ const TABS = [
 export default function App() {
   const [activeTab, setActiveTab] = useState('today')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isSosOpen, setIsSosOpen] = useState(false)
+  // SOS에서 할 일을 추가했을 수 있으니, 닫힐 때 화면을 다시 마운트해 최신 데이터 로드
+  const [screenEpoch, setScreenEpoch] = useState(0)
 
   const current = TABS.find((tab) => tab.id === activeTab)
   const Screen = current.screen
@@ -50,7 +55,7 @@ export default function App() {
       </header>
 
       <main className="flex-1 px-5 py-5 pb-28 sm:px-6">
-        <Screen />
+        <Screen key={screenEpoch} />
       </main>
 
       <nav
@@ -79,6 +84,17 @@ export default function App() {
           })}
         </div>
       </nav>
+
+      {/* SOS 플로팅 버튼 (오버레이 열려 있을 땐 숨김) */}
+      {!isSosOpen && <SosButton onOpen={() => setIsSosOpen(true)} />}
+      {isSosOpen && (
+        <SosOverlay
+          onClose={() => {
+            setIsSosOpen(false)
+            setScreenEpoch((e) => e + 1)
+          }}
+        />
+      )}
 
       {isSettingsOpen && <SettingsSheet onClose={() => setIsSettingsOpen(false)} />}
     </div>
