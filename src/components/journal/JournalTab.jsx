@@ -2,11 +2,13 @@ import { useState } from 'react'
 import DiaryBoard from './DiaryBoard.jsx'
 import PrayerBoard from './PrayerBoard.jsx'
 import IdeaBoard from './IdeaBoard.jsx'
+import WeeklyBoard from './WeeklyBoard.jsx'
 
-// 이 파일은 "기록" 탭 담당 — 하위 탭 3개(아이디어 / 일기 / 기도)
+// 이 파일은 "기록" 탭 담당 — 하위 탭 4개(아이디어 / 일기 / 주간 / 기도)
 const SUBTABS = [
   { id: 'idea', label: '아이디어' },
   { id: 'diary', label: '일기' },
+  { id: 'weekly', label: '주간' },
   { id: 'prayer', label: '기도' },
 ]
 
@@ -30,6 +32,7 @@ export default function JournalTab() {
       </div>
 
       {sub === 'diary' && <DiaryBoard />}
+      {sub === 'weekly' && <WeeklyBoard />}
       {sub === 'prayer' && <PrayerBoard />}
       {sub === 'idea' && <IdeaBoard />}
     </div>

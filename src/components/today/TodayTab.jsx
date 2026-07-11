@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { uid } from '../../lib/uid.js'
 import { useStoredState } from '../../hooks/useStoredState.js'
-import { todayKey, formatKorean } from '../../lib/date.js'
+import { todayKey, formatKorean, weekKey, weekDateKeys } from '../../lib/date.js'
+import WeeklyReviewWizard from '../journal/WeeklyReviewWizard.jsx'
 import RewardBar from './RewardBar.jsx'
 import RoutineCard from './RoutineCard.jsx'
 import OverdueTodos from './OverdueTodos.jsx'
@@ -48,8 +49,10 @@ export default function TodayTab() {
   const [goals] = useStoredState('goals', {}) // 오늘의 한 마디용 (읽기 전용)
   const [sosData] = useStoredState('sos', {}) // 앵커·버텨낸 기록 (읽기 전용)
   const [settings] = useStoredState('settings', {})
+  const [weeklyReviews, setWeeklyReviews] = useStoredState('weeklyReviews', {})
   const [editorState, setEditorState] = useState(null)
   const [eventEditing, setEventEditing] = useState(null) // null=닫힘, 'new'=추가, 객체=수정
+  const [isReviewOpen, setIsReviewOpen] = useState(false)
 
   const dayStart = settings.timeblockStart ?? 360
   const dayEnd = settings.timeblockEnd ?? 1440
@@ -65,6 +68,9 @@ export default function TodayTab() {
   const dayEvents = events.filter((event) => event.date === viewKey)
   const dayBlocks = allBlocks[viewKey] ?? []
   const dayDiary = diary[viewKey]?.text ?? ''
+  // 주간 리뷰 배너: 오늘이 일요일이고 이번 주 리뷰를 아직 안 썼을 때만
+  const isSunday = new Date().getDay() === 0
+  const showReviewBanner = isToday && isSunday && !weeklyReviews[weekKey()]
 
   function toggleRoutine(type, itemId) {
     const typeLog = { ...dayLog[type], [itemId]: !dayLog[type]?.[itemId] }
@@ -112,6 +118,11 @@ export default function TodayTab() {
       setEvents(events.filter((e) => e.id !== eventEditing.id))
     }
     setEventEditing(null)
+  }
+
+  /** 주간 리뷰 저장 (기록 탭 > 주간과 같은 저장소 공유) */
+  function saveWeeklyReview(review) {
+    setWeeklyReviews({ ...weeklyReviews, [weekKey()]: { ...review, savedAt: realToday } })
   }
 
   function saveBlock(block) {
@@ -184,6 +195,20 @@ export default function TodayTab() {
         />
       )}
 
+      {/* 주간 리뷰 안내 (일요일 · 이번 주 미작성 시) */}
+      {showReviewBanner && (
+        <button
+          onClick={() => setIsReviewOpen(true)}
+          className="sao-card flex items-center justify-between p-4 text-left transition active:scale-[0.99]"
+        >
+          <div>
+            <p className="text-sm font-bold text-[var(--color-heading)]">📝 주간 리뷰 시간이에요</p>
+            <p className="mt-0.5 text-xs text-[var(--color-muted)]">일요일 — 한 주를 3분만 돌아봐요</p>
+          </div>
+          <span className="sao-btn-primary shrink-0 px-3 py-1.5 text-sm">시작</span>
+        </button>
+      )}
+
       {/* 오늘 일정 (맨 위 · 달력과 공유 · 여기서도 추가/수정) */}
       <TodayEvents
         events={dayEvents}
@@ -251,6 +276,15 @@ export default function TodayTab() {
           onSave={saveBlock}
           onDelete={deleteBlock}
           onClose={() => setEditorState(null)}
+        />
+      )}
+
+      {isReviewOpen && (
+        <WeeklyReviewWizard
+          days={weekDateKeys()}
+          existing={weeklyReviews[weekKey()]}
+          onSave={saveWeeklyReview}
+          onClose={() => setIsReviewOpen(false)}
         />
       )}
 
