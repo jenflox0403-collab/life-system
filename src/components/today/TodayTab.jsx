@@ -44,6 +44,7 @@ export default function TodayTab() {
   const [events, setEvents] = useStoredState('events', []) // 달력과 공유 (여기서 추가·수정 가능)
   const [diary, setDiary] = useStoredState('diary', {})
   const [habitLog] = useStoredState('habitLog', {}) // 보상 카드 XP 계산용 (읽기 전용)
+  const [pomodoroLog] = useStoredState('pomodoroLog', {}) // 포모도로 세션 XP용 (읽기 전용)
   const [goals] = useStoredState('goals', {}) // 오늘의 한 마디용 (읽기 전용)
   const [sosData] = useStoredState('sos', {}) // 앵커·버텨낸 기록 (읽기 전용)
   const [settings] = useStoredState('settings', {})
@@ -176,6 +177,7 @@ export default function TodayTab() {
           timeblocks={allBlocks}
           habitLog={habitLog}
           diary={diary}
+          pomodoroLog={pomodoroLog}
           surviveLog={sosData.surviveLog ?? {}}
           goals={goals}
           sos={sosData}

@@ -20,6 +20,7 @@ export const STORE_KEYS = [
   'diary',
   'prayers',
   'pomodoroLog',
+  'pomodoro',
   'sos',
   'ideas',
   'mandalart',

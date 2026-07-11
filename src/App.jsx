@@ -9,6 +9,8 @@ import TimerTab from './components/timer/TimerTab.jsx'
 import SettingsSheet from './components/ui/SettingsSheet.jsx'
 import SosButton from './components/sos/SosButton.jsx'
 import SosOverlay from './components/sos/SosOverlay.jsx'
+import MiniTimer from './components/timer/MiniTimer.jsx'
+import PomodoroWatcher from './components/timer/PomodoroWatcher.jsx'
 import {
   IconToday,
   IconPlan,
@@ -84,6 +86,10 @@ export default function App() {
           })}
         </div>
       </nav>
+
+      {/* 포모도로 완료 감지 + 미니 타이머 (돌아가는 동안 타이머 탭 밖에서 표시) */}
+      <PomodoroWatcher />
+      <MiniTimer visible={activeTab !== 'timer' && !isSosOpen} onGoTimer={() => setActiveTab('timer')} />
 
       {/* SOS 플로팅 버튼 (오버레이 열려 있을 땐 숨김) */}
       {!isSosOpen && <SosButton onOpen={() => setIsSosOpen(true)} />}

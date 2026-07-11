@@ -3,8 +3,8 @@ import { todayKey } from '../../lib/date.js'
 
 // 이 파일은 오늘 탭 최상단 보상 카드 담당 (게임화)
 // 레벨·XP바 + 오늘 클리어 게이지 + 연속 클리어 스트릭 + 오늘의 한 마디
-export default function RewardBar({ todos, routineLog, timeblocks, habitLog, diary, surviveLog, goals, sos }) {
-  const data = { todos, routineLog, timeblocks, habitLog, diary, surviveLog }
+export default function RewardBar({ todos, routineLog, timeblocks, habitLog, diary, pomodoroLog, surviveLog, goals, sos }) {
+  const data = { todos, routineLog, timeblocks, habitLog, diary, pomodoroLog, surviveLog }
   const today = todayKey()
 
   const xp = totalXp(data)
