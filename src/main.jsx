@@ -2,6 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import { initTheme } from './lib/theme.js'
+
+// 저장된 테마(라이트/다크/시스템)를 화면 뜨기 전에 적용
+initTheme()
 
 // 모바일(특히 아이폰) 핀치 줌 차단 — 앱처럼 고정된 화면을 위해
 // (세로 스크롤은 그대로, 두 손가락 확대/축소만 막음)

@@ -270,3 +270,113 @@ body {
   display: inline-block;
   animation: reward-sparkle 1.4s ease-in-out infinite;
 }
+
+/* ===== 다크모드 ===== */
+/* html에 data-theme="dark"가 붙으면 아래 값들이 위 기본값(라이트)을 덮어씀 */
+[data-theme='dark'] {
+  --color-bg: #1a212a;
+  --color-surface: #232b35;
+  --color-text: #c3cbd4;
+  --color-heading: #dde3ea;
+  --color-muted: #7f8994;
+}
+
+/* 밤하늘 배경 그라데이션 */
+html[data-theme='dark'],
+html[data-theme='dark'] body {
+  background: linear-gradient(180deg, #232b36 0%, #1d2530 45%, #171e28 100%) fixed;
+}
+
+/* 시스템 창(카드·시트·모달) 어둡게 */
+[data-theme='dark'] .sao-card {
+  background: var(--color-surface);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.05),
+    0 6px 16px rgba(0, 0, 0, 0.35);
+}
+[data-theme='dark'] .sao-card::before {
+  background: rgba(255, 255, 255, 0.03);
+}
+[data-theme='dark'] .sao-sheet,
+[data-theme='dark'] .sao-modal {
+  background: #242d38;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+[data-theme='dark'] .sao-modal {
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.06),
+    0 12px 40px rgba(0, 0, 0, 0.5);
+}
+[data-theme='dark'] .sao-sheet > h2,
+[data-theme='dark'] .sao-sheet > h3,
+[data-theme='dark'] .sao-modal > h2,
+[data-theme='dark'] .sao-modal > h3 {
+  border-bottom-color: rgba(255, 255, 255, 0.22);
+}
+
+/* 버튼·칩·체크박스 */
+[data-theme='dark'] .sao-circle {
+  background: #2a323e;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #8a939e;
+}
+[data-theme='dark'] .sao-circle-active {
+  background: var(--color-amber);
+  color: #fff;
+  box-shadow:
+    0 0 0 2px #232b35,
+    0 0 0 3.5px var(--color-amber);
+}
+[data-theme='dark'] .add-btn {
+  background: #2a323d;
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #9aa4af;
+}
+[data-theme='dark'] .add-btn:hover {
+  background: #333d49;
+}
+[data-theme='dark'] .chip {
+  background: #2b343f;
+  border-color: rgba(255, 255, 255, 0.16);
+}
+[data-theme='dark'] .app-check {
+  background: #2a323d;
+  border-color: #4a545f;
+}
+[data-theme='dark'] .app-check:checked {
+  border-color: var(--color-accent);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E")
+      center / 70% no-repeat,
+    var(--color-accent);
+}
+
+/* SOS 전체화면 — 어두운 진정 블루 */
+[data-theme='dark'] .sos-overlay {
+  background: linear-gradient(160deg, #202b38 0%, #1b2531 55%, #161f2a 100%);
+}
+
+/* 컴포넌트에서 쓰인 흰/검 계열 클래스들 → 다크 값으로 교체 */
+[data-theme='dark'] .bg-white { background-color: var(--color-surface); }
+[data-theme='dark'] .bg-white\/60 { background-color: rgba(35, 43, 53, 0.6); }
+[data-theme='dark'] .bg-white\/70 { background-color: rgba(35, 43, 53, 0.7); }
+[data-theme='dark'] .bg-white\/80 { background-color: rgba(29, 36, 46, 0.8); }
+[data-theme='dark'] .bg-white\/85 { background-color: rgba(29, 36, 46, 0.85); }
+[data-theme='dark'] .bg-white\/95 { background-color: rgba(35, 43, 53, 0.95); }
+[data-theme='dark'] .bg-black\/\[0\.02\] { background-color: rgba(255, 255, 255, 0.03); }
+[data-theme='dark'] .bg-black\/\[0\.03\] { background-color: rgba(255, 255, 255, 0.04); }
+[data-theme='dark'] .bg-black\/\[0\.04\] { background-color: rgba(255, 255, 255, 0.05); }
+[data-theme='dark'] .bg-black\/5 { background-color: rgba(255, 255, 255, 0.07); }
+[data-theme='dark'] .bg-black\/\[0\.06\] { background-color: rgba(255, 255, 255, 0.08); }
+[data-theme='dark'] .bg-black\/40 { background-color: rgba(0, 0, 0, 0.6); }
+[data-theme='dark'] .border-black\/\[0\.05\] { border-color: rgba(255, 255, 255, 0.06); }
+[data-theme='dark'] .border-black\/\[0\.06\] { border-color: rgba(255, 255, 255, 0.07); }
+[data-theme='dark'] .border-black\/\[0\.07\] { border-color: rgba(255, 255, 255, 0.08); }
+[data-theme='dark'] .border-black\/\[0\.08\] { border-color: rgba(255, 255, 255, 0.09); }
+[data-theme='dark'] .border-black\/10 { border-color: rgba(255, 255, 255, 0.1); }
+[data-theme='dark'] .border-black\/15 { border-color: rgba(255, 255, 255, 0.14); }
+[data-theme='dark'] .border-black\/20 { border-color: rgba(255, 255, 255, 0.18); }
+[data-theme='dark'] .text-black\/20 { color: rgba(255, 255, 255, 0.25); }
+[data-theme='dark'] .text-black\/25 { color: rgba(255, 255, 255, 0.3); }
+[data-theme='dark'] .text-black\/60 { color: rgba(255, 255, 255, 0.65); }
