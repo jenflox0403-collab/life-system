@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import TodayTab from './components/today/TodayTab.jsx'
 import PlanTab from './components/plan/PlanTab.jsx'
 import HabitsTab from './components/habits/HabitsTab.jsx'
@@ -11,6 +11,7 @@ import SosButton from './components/sos/SosButton.jsx'
 import SosOverlay from './components/sos/SosOverlay.jsx'
 import MiniTimer from './components/timer/MiniTimer.jsx'
 import PomodoroWatcher from './components/timer/PomodoroWatcher.jsx'
+import NotificationWatcher from './components/notify/NotificationWatcher.jsx'
 import {
   IconToday,
   IconPlan,
@@ -43,6 +44,24 @@ export default function App() {
   const current = TABS.find((tab) => tab.id === activeTab)
   const Screen = current.screen
 
+  // 팝업(SOS·설정)이 열려 있으면 숫자키 단축키를 막기 위한 최신 상태 참조
+  const overlayRef = useRef(false)
+  overlayRef.current = isSosOpen || isSettingsOpen
+
+  // PC 단축키: 숫자 1~7 → 탭 이동 (입력 중·팝업·조합키일 땐 무시)
+  useEffect(() => {
+    function handleKey(event) {
+      if (overlayRef.current) return
+      if (event.ctrlKey || event.metaKey || event.altKey) return
+      const tag = event.target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || event.target?.isContentEditable) return
+      const index = Number(event.key) - 1
+      if (index >= 0 && index < TABS.length) setActiveTab(TABS[index].id)
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [])
+
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/10 bg-white/80 px-5 py-3.5 shadow-[0_2px_12px_rgba(60,75,90,0.08)] backdrop-blur">
@@ -65,7 +84,7 @@ export default function App() {
         className="pb-safe fixed inset-x-0 bottom-0 z-10 border-t border-black/10 bg-white/85 shadow-[0_-4px_16px_rgba(60,75,90,0.1)] backdrop-blur"
       >
         <div className="mx-auto flex max-w-5xl px-1">
-          {TABS.map((tab) => {
+          {TABS.map((tab, index) => {
             const isActive = tab.id === activeTab
             const TabIcon = tab.Icon
             return (
@@ -80,7 +99,11 @@ export default function App() {
                 <span className={`${isActive ? 'sao-circle sao-circle-active' : 'sao-circle'} transition-transform group-active:scale-90`}>
                   <TabIcon width={21} height={21} strokeWidth={isActive ? 2.2 : 1.9} />
                 </span>
-                <span className={isActive ? 'font-bold' : ''}>{tab.label}</span>
+                <span className="flex items-center gap-1">
+                  <span className={isActive ? 'font-bold' : ''}>{tab.label}</span>
+                  {/* PC 단축키 힌트 (숫자키) — 큰 화면에서만 */}
+                  <span className="hidden text-[9px] font-normal text-[var(--color-muted)] sm:inline">{index + 1}</span>
+                </span>
               </button>
             )
           })}
@@ -89,6 +112,8 @@ export default function App() {
 
       {/* 포모도로 완료 감지 + 미니 타이머 (돌아가는 동안 타이머 탭 밖에서 표시) */}
       <PomodoroWatcher />
+      {/* 알림 감시자 — 앱 켜져 있는 동안 시각 체크해 알림 발송 */}
+      <NotificationWatcher />
       <MiniTimer visible={activeTab !== 'timer' && !isSosOpen} onGoTimer={() => setActiveTab('timer')} />
 
       {/* SOS 플로팅 버튼 (오버레이 열려 있을 땐 숨김) */}

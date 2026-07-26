@@ -27,6 +27,8 @@ export const STORE_KEYS = [
   'weeklyReviews',
   'badgesSeen',
   'rankSeen',
+  'reminders',
+  'notifSettings',
 ]
 
 /** 데이터 불러오기. 없거나 깨져 있으면 fallback을 돌려줌 */

@@ -21,6 +21,19 @@ self.addEventListener('activate', (event) => {
   )
 })
 
+// 알림을 누르면 이미 열린 앱 창으로 이동(없으면 새로 열기)
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      for (const client of clients) {
+        if ('focus' in client) return client.focus()
+      }
+      if (self.clients.openWindow) return self.clients.openWindow('./')
+    }),
+  )
+})
+
 self.addEventListener('fetch', (event) => {
   const { request } = event
   if (request.method !== 'GET') return

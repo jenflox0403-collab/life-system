@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { downloadBackup, restoreBackup } from '../../lib/backup.js'
 import { load } from '../../lib/storage.js'
 import { saveThemePref } from '../../lib/theme.js'
+import NotifSettings from './NotifSettings.jsx'
 
 const THEME_OPTIONS = [
   { id: 'system', label: '시스템' },
@@ -61,6 +62,9 @@ export default function SettingsSheet({ onClose }) {
             ))}
           </div>
         </div>
+
+        {/* 알림 설정 */}
+        <NotifSettings />
 
         <div className="flex flex-col gap-3">
           <button
