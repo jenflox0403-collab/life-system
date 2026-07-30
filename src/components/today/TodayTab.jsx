@@ -55,7 +55,7 @@ export default function TodayTab() {
   const [isReviewOpen, setIsReviewOpen] = useState(false)
 
   const dayStart = settings.timeblockStart ?? 360
-  const dayEnd = settings.timeblockEnd ?? 1440
+  const dayEnd = settings.timeblockEnd ?? 1560 // 새벽 2시까지 (자정 넘어 26:00)
   const isToday = viewKey === realToday
   const [vy, vm, vd] = viewKey.split('-').map(Number)
   const viewDate = new Date(vy, vm - 1, vd)

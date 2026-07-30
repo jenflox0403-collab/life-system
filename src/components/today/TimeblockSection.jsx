@@ -23,7 +23,9 @@ export default function TimeblockSection({
     return () => clearInterval(timer)
   }, [])
 
-  const nowMinutes = now.getHours() * 60 + now.getMinutes()
+  // 자정 넘어가는 표(예: ~새벽 2시)에선 이른 새벽을 그 전날 표의 연장선으로 봄
+  let nowMinutes = now.getHours() * 60 + now.getMinutes()
+  if (nowMinutes < dayStart) nowMinutes += 1440
   const hours = []
   for (let t = dayStart; t < dayEnd; t += 60) hours.push(t)
 
@@ -81,7 +83,7 @@ export default function TimeblockSection({
             <div key={rowStart} className="flex border-b border-black/15 last:border-b-0" style={{ height: ROW_H }}>
               {/* 시간 라벨 */}
               <div className="flex w-10 shrink-0 items-center justify-center border-r border-black/15 bg-black/[0.03] text-[13px] font-medium text-[var(--color-text)]">
-                {Math.floor(rowStart / 60)}
+                {Math.floor(rowStart / 60) % 24}
               </div>
 
               {/* 10분 x 6칸 */}

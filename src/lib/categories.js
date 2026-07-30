@@ -13,9 +13,9 @@ export function categoryColor(id) {
   return CATEGORIES.find((c) => c.id === id)?.color ?? 'var(--cat-buffer)'
 }
 
-/** 분(360) → "06:00" 표기 */
+/** 분(360) → "06:00" 표기. 자정을 넘어가면(1440분 이상) 0·1·2시로 감싸서 표기 */
 export function minutesToLabel(min) {
-  const h = String(Math.floor(min / 60)).padStart(2, '0')
+  const h = String(Math.floor(min / 60) % 24).padStart(2, '0')
   const m = String(min % 60).padStart(2, '0')
   return `${h}:${m}`
 }
