@@ -1,93 +1,169 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { uid } from '../../lib/uid.js'
 import { todayKey } from '../../lib/date.js'
 import { useStoredState } from '../../hooks/useStoredState.js'
 
-// 이 파일은 기록 탭 > 아이디어 화면 담당
-// 스치는 생각을 흘리지 않게 빠르게 잡아두는 곳 (엔터 한 번으로 저장)
-// 콘텐츠가 될 만한 건 "▸ 콘텐츠" 버튼으로 파이프라인 아이디어 칸으로 보냄
+// 이 파일은 기록 탭 > 아이디어 담당 — "잡생각 메모 벽(포스트잇)"
+// 머릿속에 스치는 생각들을 색색깔 메모로 자유롭게 붙여두고, 탭하면 바로 수정
+// 콘텐츠용이 아니라 순수 브레인 덤프 공간
+
+// 포스트잇 색 팔레트 (배경은 늘 밝게 — 다크모드에서도 벽에 붙인 메모처럼 보이게)
+const PALETTE = [
+  { id: 'yellow', bg: '#fef3c7' },
+  { id: 'pink', bg: '#fce7f0' },
+  { id: 'blue', bg: '#dbeafe' },
+  { id: 'green', bg: '#d9f2e0' },
+  { id: 'purple', bg: '#ede9fe' },
+  { id: 'orange', bg: '#ffe8d6' },
+]
+const NOTE_TEXT = '#413d34' // 밝은 메모 위 글자색 (테마 무관 고정)
+
+function colorBg(id) {
+  return (PALETTE.find((c) => c.id === id) ?? PALETTE[0]).bg
+}
+
 export default function IdeaBoard() {
   const [ideas, setIdeas] = useStoredState('ideas', [])
-  const [content, setContent] = useStoredState('content', [])
-  const [text, setText] = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const textareaRef = useRef(null)
 
-  const sorted = [...ideas].sort((a, b) => (a.date < b.date ? 1 : -1)) // 최신순
+  // 편집 시작 시 포커스 + 높이 맞춤 + 커서 맨 끝
+  useEffect(() => {
+    if (!editingId || !textareaRef.current) return
+    const el = textareaRef.current
+    el.focus()
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+    const len = el.value.length
+    el.setSelectionRange(len, len)
+  }, [editingId])
 
-  function addIdea(e) {
-    e.preventDefault()
-    if (!text.trim()) return
-    setIdeas([...ideas, { id: uid(), text: text.trim(), date: todayKey() }])
-    setText('')
+  function addNote() {
+    const note = { id: uid(), text: '', color: PALETTE[ideas.length % PALETTE.length].id, date: todayKey() }
+    setIdeas([note, ...ideas])
+    setEditingId(note.id)
   }
 
-  function removeIdea(id) {
-    setIdeas(ideas.filter((i) => i.id !== id))
+  function patchNote(id, changes) {
+    setIdeas(ideas.map((n) => (n.id === id ? { ...n, ...changes } : n)))
   }
 
-  /** 콘텐츠 파이프라인 "아이디어" 칸으로 이동 (여기 목록에선 빠짐) */
-  function sendToContent(idea) {
-    setContent([
-      ...content,
-      { id: uid(), title: idea.text, format: 'long', owner: 'me', stage: 'idea', uploadDate: '', memo: '', createdAt: todayKey(), archived: false },
-    ])
-    setIdeas(ideas.filter((i) => i.id !== idea.id))
+  function removeNote(id) {
+    setIdeas(ideas.filter((n) => n.id !== id))
+    if (editingId === id) setEditingId(null)
+  }
+
+  /** 다른 메모로 편집 이동 — 직전 메모가 비어 있으면 조용히 버림 */
+  function beginEdit(id) {
+    if (editingId && editingId !== id) {
+      const prev = ideas.find((n) => n.id === editingId)
+      if (prev && !prev.text.trim()) setIdeas(ideas.filter((n) => n.id !== editingId))
+    }
+    setEditingId(id)
+  }
+
+  /** 편집 종료 — 빈 메모는 저장 안 하고 삭제 */
+  function stopEditing() {
+    const editing = ideas.find((n) => n.id === editingId)
+    if (editing && !editing.text.trim()) setIdeas(ideas.filter((n) => n.id !== editingId))
+    setEditingId(null)
+  }
+
+  function grow(el) {
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <section className="sao-card p-5">
-        <h3 className="sao-title mb-1 font-bold">아이디어 브레인스토밍</h3>
-        <p className="mb-3 text-xs text-[var(--color-muted)]">떠오르는 생각을 마음껏 쏟아내세요. 길게 써도 좋아요.</p>
-        <form onSubmit={addIdea} className="mb-4">
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows={6}
-            placeholder={'예)\n- 이번 달 브이로그 주제 3개\n- 썸네일 색감 실험\n- 오프닝 멘트 새로 짜보기\n\n엔터로 줄바꿈, 아래 "추가"로 저장'}
-            className="min-h-[9rem] w-full resize-y rounded-[8px] border border-black/10 px-3.5 py-3 leading-relaxed outline-none focus:border-[var(--color-accent)]"
-          />
-          <div className="mt-2 flex justify-end">
-            <button type="submit" className="add-btn px-5 py-2.5">추가</button>
-          </div>
-        </form>
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-2">
+        <p className="min-w-0 text-xs text-[var(--color-muted)]">머릿속 잡생각을 자유롭게 붙여두는 메모 벽</p>
+        <button onClick={addNote} className="add-btn shrink-0 px-4 py-1.5">+ 새 메모</button>
+      </div>
 
-        {sorted.length === 0 ? (
-          <p className="py-2 text-sm text-[var(--color-muted)]">아직 잡아둔 아이디어가 없어요</p>
-        ) : (
-          <ul className="flex flex-col gap-2.5">
-            {sorted.map((idea) => (
-              <li
-                key={idea.id}
-                className="rounded-[8px] border border-black/[0.07] bg-white px-4 py-3.5"
+      {ideas.length === 0 ? (
+        <div className="sao-card p-8 text-center">
+          <p className="text-sm leading-relaxed text-[var(--color-muted)]">
+            아직 메모가 없어요.
+            <br />“+ 새 메모”로 떠오른 생각을 붙여보세요!
+          </p>
+        </div>
+      ) : (
+        <div className="columns-2 [column-gap:0.75rem] sm:columns-3">
+          {ideas.map((note, index) => {
+            const isEditing = editingId === note.id
+            const bg = colorBg(note.color ?? PALETTE[index % PALETTE.length].id)
+            return (
+              <div
+                key={note.id}
+                onClick={() => !isEditing && beginEdit(note.id)}
+                className="mb-3 break-inside-avoid cursor-pointer rounded-xl p-3.5 shadow-[0_2px_8px_rgba(60,60,40,0.13)] transition active:scale-[0.99]"
+                style={{ background: bg, color: NOTE_TEXT }}
               >
-                <p className="whitespace-pre-wrap text-base leading-relaxed">{idea.text}</p>
-                <div className="mt-2.5 flex items-center gap-2">
-                  <span className="text-xs text-[var(--color-muted)]">{idea.date.slice(5).replace('-', '/')}</span>
-                  <button
-                    type="button"
-                    onClick={() => sendToContent(idea)}
-                    title="콘텐츠 파이프라인으로 보내기"
-                    className="chip ml-auto shrink-0"
-                  >
-                    ▸ 콘텐츠
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removeIdea(idea.id)}
-                    aria-label="삭제"
-                    className="shrink-0 px-1 text-black/20 hover:text-red-400"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-      <p className="px-1 text-xs text-[var(--color-muted)]">
-        ▸ 콘텐츠를 누르면 콘텐츠 탭 파이프라인의 "아이디어" 칸으로 이동해요
-      </p>
+                {isEditing ? (
+                  <>
+                    <textarea
+                      ref={textareaRef}
+                      value={note.text}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => {
+                        patchNote(note.id, { text: e.target.value })
+                        grow(e.target)
+                      }}
+                      placeholder="생각을 적어보세요…"
+                      className="w-full min-h-[2.5rem] resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-black/30"
+                      style={{ color: NOTE_TEXT }}
+                    />
+                    {/* 색 고르기 + 삭제 */}
+                    <div className="mt-2 flex items-center gap-1.5">
+                      {PALETTE.map((c) => (
+                        <button
+                          key={c.id}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            patchNote(note.id, { color: c.id })
+                          }}
+                          aria-label={`${c.id} 색`}
+                          className={`h-5 w-5 rounded-full border ${note.color === c.id ? 'border-black/50' : 'border-black/10'}`}
+                          style={{ background: c.bg }}
+                        />
+                      ))}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          removeNote(note.id)
+                        }}
+                        aria-label="삭제"
+                        className="ml-auto px-1 text-black/35 hover:text-red-500"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className="mt-2 flex justify-end">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          stopEditing()
+                        }}
+                        className="rounded-md bg-black/10 px-3 py-1 text-xs font-bold text-black/60"
+                      >
+                        완료
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">
+                      {note.text || <span className="text-black/30">빈 메모</span>}
+                    </p>
+                    <p className="mt-2 text-[11px] text-black/35">{note.date?.slice(5).replace('-', '/')}</p>
+                  </>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
