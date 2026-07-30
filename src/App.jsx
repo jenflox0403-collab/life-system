@@ -14,6 +14,7 @@ import VerseOverlay from './components/verse/VerseOverlay.jsx'
 import MiniTimer from './components/timer/MiniTimer.jsx'
 import PomodoroWatcher from './components/timer/PomodoroWatcher.jsx'
 import NotificationWatcher from './components/notify/NotificationWatcher.jsx'
+import SyncWatcher from './components/sync/SyncWatcher.jsx'
 import {
   IconToday,
   IconPlan,
@@ -117,6 +118,8 @@ export default function App() {
       <PomodoroWatcher />
       {/* 알림 감시자 — 앱 켜져 있는 동안 시각 체크해 알림 발송 */}
       <NotificationWatcher />
+      {/* 동기화 감시자 — 앱 켤 때·돌아올 때·주기적으로 클라우드와 맞춤 */}
+      <SyncWatcher />
       <MiniTimer visible={activeTab !== 'timer' && !isSosOpen && !isVerseOpen} onGoTimer={() => setActiveTab('timer')} />
 
       {/* 말씀 플로팅 버튼 (SOS 위) + 읊조리기 오버레이 */}

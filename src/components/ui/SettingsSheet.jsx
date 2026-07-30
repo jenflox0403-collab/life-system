@@ -3,6 +3,7 @@ import { downloadBackup, restoreBackup } from '../../lib/backup.js'
 import { load } from '../../lib/storage.js'
 import { saveThemePref } from '../../lib/theme.js'
 import NotifSettings from './NotifSettings.jsx'
+import SyncSettings from '../sync/SyncSettings.jsx'
 
 const THEME_OPTIONS = [
   { id: 'system', label: '시스템' },
@@ -62,6 +63,9 @@ export default function SettingsSheet({ onClose }) {
             ))}
           </div>
         </div>
+
+        {/* 폰↔컴퓨터 동기화 */}
+        <SyncSettings />
 
         {/* 알림 설정 */}
         <NotifSettings />
