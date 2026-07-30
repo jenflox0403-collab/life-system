@@ -253,6 +253,15 @@ body {
   animation: sos-pop-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 전체화면 말씀 묵상 배경 (따뜻한 빛 그라데이션) */
+.verse-overlay {
+  background: linear-gradient(160deg, #fbf6ea 0%, #f5ead2 55%, #eeddc0 100%);
+  animation: sos-fade-in 0.25s ease-out;
+}
+[data-theme='dark'] .verse-overlay {
+  background: linear-gradient(160deg, #26211a 0%, #2b2419 55%, #322a1c 100%);
+}
+
 /* ===== 게임화 (오늘 클리어 축하) ===== */
 @keyframes reward-pop {
   0% { opacity: 0; transform: scale(0.6); }

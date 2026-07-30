@@ -9,6 +9,8 @@ import TimerTab from './components/timer/TimerTab.jsx'
 import SettingsSheet from './components/ui/SettingsSheet.jsx'
 import SosButton from './components/sos/SosButton.jsx'
 import SosOverlay from './components/sos/SosOverlay.jsx'
+import VerseButton from './components/verse/VerseButton.jsx'
+import VerseOverlay from './components/verse/VerseOverlay.jsx'
 import MiniTimer from './components/timer/MiniTimer.jsx'
 import PomodoroWatcher from './components/timer/PomodoroWatcher.jsx'
 import NotificationWatcher from './components/notify/NotificationWatcher.jsx'
@@ -38,6 +40,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('today')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSosOpen, setIsSosOpen] = useState(false)
+  const [isVerseOpen, setIsVerseOpen] = useState(false)
   // SOS에서 할 일을 추가했을 수 있으니, 닫힐 때 화면을 다시 마운트해 최신 데이터 로드
   const [screenEpoch, setScreenEpoch] = useState(0)
 
@@ -114,10 +117,14 @@ export default function App() {
       <PomodoroWatcher />
       {/* 알림 감시자 — 앱 켜져 있는 동안 시각 체크해 알림 발송 */}
       <NotificationWatcher />
-      <MiniTimer visible={activeTab !== 'timer' && !isSosOpen} onGoTimer={() => setActiveTab('timer')} />
+      <MiniTimer visible={activeTab !== 'timer' && !isSosOpen && !isVerseOpen} onGoTimer={() => setActiveTab('timer')} />
+
+      {/* 말씀 플로팅 버튼 (SOS 위) + 읊조리기 오버레이 */}
+      {!isSosOpen && !isVerseOpen && <VerseButton onOpen={() => setIsVerseOpen(true)} />}
+      {isVerseOpen && <VerseOverlay onClose={() => setIsVerseOpen(false)} />}
 
       {/* SOS 플로팅 버튼 (오버레이 열려 있을 땐 숨김) */}
-      {!isSosOpen && <SosButton onOpen={() => setIsSosOpen(true)} />}
+      {!isSosOpen && !isVerseOpen && <SosButton onOpen={() => setIsSosOpen(true)} />}
       {isSosOpen && (
         <SosOverlay
           onClose={() => {
