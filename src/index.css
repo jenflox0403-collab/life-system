@@ -253,13 +253,13 @@ body {
   animation: sos-pop-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 전체화면 말씀 묵상 배경 (따뜻한 빛 그라데이션) */
+/* 전체화면 말씀 묵상 배경 (잔잔한 초록 그라데이션) */
 .verse-overlay {
-  background: linear-gradient(160deg, #fbf6ea 0%, #f5ead2 55%, #eeddc0 100%);
+  background: linear-gradient(160deg, #eaf5ec 0%, #d7ebda 55%, #c3e1c9 100%);
   animation: sos-fade-in 0.25s ease-out;
 }
 [data-theme='dark'] .verse-overlay {
-  background: linear-gradient(160deg, #26211a 0%, #2b2419 55%, #322a1c 100%);
+  background: linear-gradient(160deg, #18211a 0%, #1d281f 55%, #223026 100%);
 }
 
 /* ===== 게임화 (오늘 클리어 축하) ===== */

@@ -51,6 +51,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock, onDefe
             onToggleImportant={() => patch(todo.id, { important: !todo.important })}
             onDefer={() => onDefer(todo)}
             onSendToBlock={() => onSendToTimeblock(todo)}
+            onRename={(text) => patch(todo.id, { text })}
             onRemove={() => onChange(todos.filter((t) => t.id !== todo.id))}
           />
         ))}

@@ -273,6 +273,8 @@ export default function TodayTab() {
           initial={editorState}
           dayStart={dayStart}
           dayEnd={dayEnd}
+          todos={dayTodos.filter((todo) => !todo.done)}
+          events={dayEvents}
           onSave={saveBlock}
           onDelete={deleteBlock}
           onClose={() => setEditorState(null)}

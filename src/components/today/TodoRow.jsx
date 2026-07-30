@@ -11,11 +11,27 @@ export default function TodoRow({
   onToggleImportant,
   onDefer, // 있으면 "연기" 버튼 표시
   onSendToBlock, // 있으면 "블록" 버튼 표시
+  onRename, // 있으면 "수정" 버튼 표시 (내용 고치기)
   onRemove,
   showDate = false,
 }) {
   const [expanded, setExpanded] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(todo.text)
   const rowRef = useRef(null)
+
+  // 수정 내용 저장 (빈 값·변화 없으면 그냥 닫기)
+  function commitEdit() {
+    const next = draft.trim()
+    if (next && next !== todo.text) onRename(next)
+    setEditing(false)
+  }
+
+  function startEdit() {
+    setDraft(todo.text)
+    setEditing(true)
+    setExpanded(false)
+  }
 
   // 펼쳐진 상태에서 바깥 아무 곳이나 누르면 닫힘
   useEffect(() => {
@@ -54,33 +70,64 @@ export default function TodoRow({
           onClick={(e) => e.stopPropagation()}
           className="app-check"
         />
-        <span className={`min-w-0 flex-1 text-[15px] ${todo.done ? 'text-[var(--color-muted)] line-through' : ''}`}>
-          {todo.text}
-        </span>
-        {showDate && (
+        {editing ? (
+          <input
+            value={draft}
+            autoFocus
+            onChange={(e) => setDraft(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') commitEdit()
+              if (e.key === 'Escape') setEditing(false)
+            }}
+            onBlur={commitEdit}
+            className="min-w-0 flex-1 rounded-[5px] border border-[var(--color-accent)] px-2 py-1 text-[15px] outline-none"
+          />
+        ) : (
+          <span className={`min-w-0 flex-1 text-[15px] ${todo.done ? 'text-[var(--color-muted)] line-through' : ''}`}>
+            {todo.text}
+          </span>
+        )}
+        {!editing && showDate && (
           <span className="shrink-0 text-xs text-[var(--color-muted)]">{todo.date?.slice(5).replace('-', '/')}</span>
         )}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            setExpanded((v) => !v)
-          }}
-          aria-label={expanded ? '접기' : '펼치기'}
-          aria-expanded={expanded}
-          className="shrink-0 px-1 text-[11px] text-black/25"
-        >
-          {expanded ? '▴' : '▾'}
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onRemove()
-          }}
-          className="shrink-0 px-1 text-black/20 hover:text-red-400"
-        >
-          ✕
-        </button>
+        {editing ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              commitEdit()
+            }}
+            aria-label="수정 저장"
+            className="shrink-0 px-1 text-sm font-bold text-[var(--color-accent)]"
+          >
+            저장
+          </button>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setExpanded((v) => !v)
+              }}
+              aria-label={expanded ? '접기' : '펼치기'}
+              aria-expanded={expanded}
+              className="shrink-0 px-1 text-[11px] text-black/25"
+            >
+              {expanded ? '▴' : '▾'}
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onRemove()
+              }}
+              className="shrink-0 px-1 text-black/20 hover:text-red-400"
+            >
+              ✕
+            </button>
+          </>
+        )}
       </div>
 
       {expanded && (
@@ -99,6 +146,9 @@ export default function TodoRow({
           >
             중요
           </button>
+          {onRename && (
+            <button onClick={startEdit} className="chip">수정</button>
+          )}
           {onDefer && !todo.done && (
             <button onClick={onDefer} className="chip">연기</button>
           )}
