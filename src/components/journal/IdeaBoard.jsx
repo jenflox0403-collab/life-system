@@ -22,6 +22,14 @@ function colorBg(id) {
   return (PALETTE.find((c) => c.id === id) ?? PALETTE[0]).bg
 }
 
+// 저장된 색이 없는 옛 메모는 id에서 색을 뽑아 "항상 같은 색"을 유지 (순서가 바뀌어도 안 변함)
+function stableColor(note) {
+  if (note.color) return note.color
+  let sum = 0
+  for (const ch of String(note.id)) sum += ch.charCodeAt(0)
+  return PALETTE[sum % PALETTE.length].id
+}
+
 export default function IdeaBoard() {
   const [ideas, setIdeas] = useStoredState('ideas', [])
   const [editingId, setEditingId] = useState(null)
@@ -90,9 +98,10 @@ export default function IdeaBoard() {
         </div>
       ) : (
         <div className="columns-2 [column-gap:0.75rem] sm:columns-3">
-          {ideas.map((note, index) => {
+          {ideas.map((note) => {
             const isEditing = editingId === note.id
-            const bg = colorBg(note.color ?? PALETTE[index % PALETTE.length].id)
+            const noteColor = stableColor(note)
+            const bg = colorBg(noteColor)
             return (
               <div
                 key={note.id}
@@ -124,7 +133,7 @@ export default function IdeaBoard() {
                             patchNote(note.id, { color: c.id })
                           }}
                           aria-label={`${c.id} 색`}
-                          className={`h-5 w-5 rounded-full border ${note.color === c.id ? 'border-black/50' : 'border-black/10'}`}
+                          className={`h-5 w-5 rounded-full border ${noteColor === c.id ? 'border-black/50' : 'border-black/10'}`}
                           style={{ background: c.bg }}
                         />
                       ))}
