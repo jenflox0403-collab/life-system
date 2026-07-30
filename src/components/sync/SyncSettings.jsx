@@ -44,8 +44,10 @@ export default function SyncSettings() {
 
   function patch(changes) {
     const next = { ...cfg, ...changes }
+    // 처음 켤 때 코드가 비어 있으면 안전한 무작위 코드를 자동으로 채움 (약한 코드 = 일기 노출 방지)
+    if (changes.on === true && !next.code.trim()) next.code = makeCode()
     // 주소나 코드가 바뀌면 다른 금고이므로 "마지막으로 본 버전"을 초기화
-    if (changes.dbUrl !== undefined || changes.code !== undefined) resetSyncState()
+    if (changes.dbUrl !== undefined || changes.code !== undefined || changes.on === true) resetSyncState()
     setCfg(next)
     saveSyncCfg(next)
   }
