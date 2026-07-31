@@ -19,7 +19,7 @@ const NOTE_TEXT = '#413d34' // 밝은 메모 위 글자색 (테마 무관 고정
 
 const GAP = 10 // 칸 사이 간격(px)
 const CELL_H = 130 // 한 칸 높이(px)
-const TARGET_W = 165 // 한 칸 목표 너비 → 화면 폭에 따라 열 개수 자동 계산
+const COLS = 3 // 열 개수 (항상 3열)
 
 function colorBg(id) {
   return (PALETTE.find((c) => c.id === id) ?? PALETTE[0]).bg
@@ -97,7 +97,7 @@ export default function IdeaBoard() {
   }, [editingId])
 
   const width = boardW || 360
-  const cols = Math.max(2, Math.round(width / TARGET_W))
+  const cols = COLS
   const cellW = (width - GAP * (cols - 1)) / cols
   const stepX = cellW + GAP
   const stepY = CELL_H + GAP
@@ -106,16 +106,22 @@ export default function IdeaBoard() {
   const boardH = ideas.length ? (maxRow + 1) * stepY - GAP : CELL_H
 
   function addNote() {
-    const cell = firstFreeCell(placed, cols)
+    // 편집 중이던 메모가 비어 있으면 조용히 버림
+    let base = ideas
+    if (editingId) {
+      const prev = ideas.find((n) => n.id === editingId)
+      if (prev && !prev.text.trim()) base = ideas.filter((n) => n.id !== editingId)
+    }
+    const cell = firstFreeCell(placeNotes(base, cols), cols)
     const note = {
       id: uid(),
       text: '',
-      color: PALETTE[ideas.length % PALETTE.length].id,
+      color: PALETTE[base.length % PALETTE.length].id,
       date: todayKey(),
       col: cell.col,
       row: cell.row,
     }
-    setIdeas([...ideas, note])
+    setIdeas([...base, note])
     setEditingId(note.id)
   }
 
@@ -234,6 +240,9 @@ export default function IdeaBoard() {
           />
         )}
 
+        {/* 편집 중 바깥을 누르면 저장하고 닫기 (완료 버튼 대신) */}
+        {editingId && <div className="absolute inset-0 z-30" onClick={stopEditing} />}
+
         {ideas.map((note) => {
           const p = placed[note.id]
           const isEditing = editingId === note.id
@@ -304,14 +313,6 @@ export default function IdeaBoard() {
                       className="ml-auto px-1 text-black/35 hover:text-red-500"
                     >
                       ✕
-                    </button>
-                  </div>
-                  <div className="mt-2 flex justify-end">
-                    <button
-                      onClick={stopEditing}
-                      className="rounded-md bg-black/10 px-3 py-1 text-xs font-bold text-black/60"
-                    >
-                      완료
                     </button>
                   </div>
                 </div>
