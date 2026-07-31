@@ -17,6 +17,15 @@ const PALETTE = [
 ]
 const NOTE_TEXT = '#413d34' // 밝은 메모 위 글자색 (테마 무관 고정)
 
+// 메모에 붙일 수 있는 태그들 (여러 개 동시에 켤 수 있음)
+const TAGS = [
+  { key: 'important', label: '중요', bg: 'rgba(217,119,6,0.16)', fg: '#b45309', border: 'rgba(217,119,6,0.5)' },
+  { key: 'urgent', label: '긴급', bg: 'rgba(220,38,38,0.14)', fg: '#b91c1c', border: 'rgba(220,38,38,0.5)' },
+  { key: 'plan', label: '기획', bg: 'rgba(37,99,235,0.14)', fg: '#1d4ed8', border: 'rgba(37,99,235,0.5)' },
+  { key: 'study', label: '공부', bg: 'rgba(21,128,61,0.15)', fg: '#15803d', border: 'rgba(21,128,61,0.5)' },
+  { key: 'goal', label: '목표', bg: 'rgba(124,58,237,0.15)', fg: '#7c3aed', border: 'rgba(124,58,237,0.5)' },
+]
+
 const GAP = 10 // 메모 사이 간격(px)
 const COLS = 3 // 열 개수 (항상 3열)
 const EST_H = 110 // 아직 크기를 못 잰 메모의 임시 높이
@@ -30,6 +39,15 @@ function isLongNote(text) {
   if (!text) return false
   const newlines = (text.match(/\n/g)?.length ?? 0) + 1
   return newlines > LONG_NEWLINES || text.length > LONG_CHARS
+}
+
+// 마감일 배지 정보 계산 (지남=빨강, 오늘=주황, 나중=회색)
+function deadlineBadge(deadline, today) {
+  if (!deadline) return null
+  const md = `${Number(deadline.slice(5, 7))}/${Number(deadline.slice(8, 10))}`
+  if (deadline < today) return { label: `마감 지남 ${md}`, bg: 'rgba(220,38,38,0.16)', fg: '#b91c1c' }
+  if (deadline === today) return { label: '오늘 마감', bg: 'rgba(220,38,38,0.16)', fg: '#b91c1c' }
+  return { label: `마감 ${md}`, bg: 'rgba(0,0,0,0.06)', fg: 'rgba(65,61,52,0.75)' }
 }
 
 function colorBg(id) {
@@ -76,7 +94,10 @@ export default function IdeaBoard() {
   // 각 메모의 실제 높이 측정 (내용·너비·편집상태가 바뀔 때만)
   const measureKey =
     ideas
-      .map((n) => `${n.id}:${n.text?.length ?? 0}:${n.important ? 1 : 0}${n.urgent ? 1 : 0}:${expanded.has(n.id) ? 1 : 0}`)
+      .map(
+        (n) =>
+          `${n.id}:${n.text?.length ?? 0}:${TAGS.map((t) => (n[t.key] ? 1 : 0)).join('')}:${n.deadline || ''}:${expanded.has(n.id) ? 1 : 0}`,
+      )
       .join('|') + `@${Math.round(width)}#${editingId}~${measureNonce}`
   useLayoutEffect(() => {
     const next = {}
@@ -249,6 +270,7 @@ export default function IdeaBoard() {
   }
 
   const insertion = drag ? insertionAt(drag.x, drag.y) : null
+  const today = todayKey()
 
   return (
     <div className="flex flex-col gap-3">
@@ -331,32 +353,46 @@ export default function IdeaBoard() {
                     className="w-full min-h-[3.5rem] resize-none bg-transparent text-[15px] leading-relaxed outline-none placeholder:text-black/30"
                     style={{ color: NOTE_TEXT }}
                   />
-                  {/* 중요·긴급 토글 (눌리면 색이 참) */}
+                  {/* 태그 토글 (눌리면 색이 참) */}
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    {TAGS.map((t) => (
+                      <button
+                        key={t.key}
+                        onClick={() => patchNote(note.id, { [t.key]: !note[t.key] })}
+                        aria-pressed={!!note[t.key]}
+                        className="rounded-full border px-2.5 py-1 text-[11px] font-bold"
+                        style={
+                          note[t.key]
+                            ? { background: t.bg, color: t.fg, borderColor: t.border }
+                            : { color: 'rgba(65,61,52,0.55)', borderColor: 'rgba(0,0,0,0.15)' }
+                        }
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* 마감일 (데드라인) */}
                   <div className="mt-2 flex items-center gap-1.5">
-                    <button
-                      onClick={() => patchNote(note.id, { important: !note.important })}
-                      aria-pressed={!!note.important}
-                      className="rounded-full border px-2.5 py-1 text-[11px] font-bold"
-                      style={
-                        note.important
-                          ? { background: 'rgba(217,119,6,0.16)', color: '#b45309', borderColor: 'rgba(217,119,6,0.5)' }
-                          : { color: 'rgba(65,61,52,0.55)', borderColor: 'rgba(0,0,0,0.15)' }
-                      }
-                    >
-                      중요
-                    </button>
-                    <button
-                      onClick={() => patchNote(note.id, { urgent: !note.urgent })}
-                      aria-pressed={!!note.urgent}
-                      className="rounded-full border px-2.5 py-1 text-[11px] font-bold"
-                      style={
-                        note.urgent
-                          ? { background: 'rgba(220,38,38,0.14)', color: '#b91c1c', borderColor: 'rgba(220,38,38,0.5)' }
-                          : { color: 'rgba(65,61,52,0.55)', borderColor: 'rgba(0,0,0,0.15)' }
-                      }
-                    >
-                      긴급
-                    </button>
+                    <span className="text-[11px] font-bold" style={{ color: 'rgba(65,61,52,0.7)' }}>
+                      마감
+                    </span>
+                    <input
+                      type="date"
+                      value={note.deadline || ''}
+                      onChange={(e) => patchNote(note.id, { deadline: e.target.value })}
+                      className="rounded-lg border border-black/15 bg-white/70 px-2 py-1 text-[12px]"
+                      style={{ color: NOTE_TEXT }}
+                    />
+                    {note.deadline && (
+                      <button
+                        onClick={() => patchNote(note.id, { deadline: '' })}
+                        aria-label="마감일 지우기"
+                        className="px-1 text-[12px] text-black/35 hover:text-red-500"
+                      >
+                        지우기
+                      </button>
+                    )}
                   </div>
                   <div className="mt-2 flex items-center gap-1.5">
                     {PALETTE.map((c) => (
@@ -379,26 +415,32 @@ export default function IdeaBoard() {
                 </div>
               ) : (
                 <div onClick={() => beginEdit(note.id)} className="cursor-pointer px-3 pb-3">
-                  {(note.important || note.urgent) && (
-                    <div className="mb-1.5 flex flex-wrap gap-1">
-                      {note.important && (
-                        <span
-                          className="rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none"
-                          style={{ background: 'rgba(217,119,6,0.16)', color: '#b45309' }}
-                        >
-                          중요
-                        </span>
-                      )}
-                      {note.urgent && (
-                        <span
-                          className="rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none"
-                          style={{ background: 'rgba(220,38,38,0.14)', color: '#b91c1c' }}
-                        >
-                          긴급
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  {(() => {
+                    const activeTags = TAGS.filter((t) => note[t.key])
+                    const dl = deadlineBadge(note.deadline, today)
+                    if (!activeTags.length && !dl) return null
+                    return (
+                      <div className="mb-1.5 flex flex-wrap gap-1">
+                        {activeTags.map((t) => (
+                          <span
+                            key={t.key}
+                            className="rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none"
+                            style={{ background: t.bg, color: t.fg }}
+                          >
+                            {t.label}
+                          </span>
+                        ))}
+                        {dl && (
+                          <span
+                            className="rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none"
+                            style={{ background: dl.bg, color: dl.fg }}
+                          >
+                            {dl.label}
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })()}
                   <p
                     className="whitespace-pre-wrap break-words text-[14px] leading-relaxed"
                     style={
