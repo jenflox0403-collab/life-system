@@ -5,6 +5,7 @@ import { todayKey, formatKorean, weekKey, weekDateKeys } from '../../lib/date.js
 import WeeklyReviewWizard from '../journal/WeeklyReviewWizard.jsx'
 import RewardBar from './RewardBar.jsx'
 import DdayStrip from './DdayStrip.jsx'
+import WeekPlanCard from './WeekPlanCard.jsx'
 import RoutineCard from './RoutineCard.jsx'
 import OverdueTodos from './OverdueTodos.jsx'
 import TodayEvents from './TodayEvents.jsx'
@@ -198,6 +199,9 @@ export default function TodayTab() {
           sos={sosData}
         />
       )}
+
+      {/* 이번 주 영상 계획 (접었다 펴는 카드) — 일~토 업로드/제작/메모 */}
+      <WeekPlanCard />
 
       {/* 주간 리뷰 안내 (일요일 · 이번 주 미작성 시) */}
       {showReviewBanner && (
