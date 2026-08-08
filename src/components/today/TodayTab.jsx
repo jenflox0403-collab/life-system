@@ -4,6 +4,7 @@ import { useStoredState } from '../../hooks/useStoredState.js'
 import { todayKey, formatKorean, weekKey, weekDateKeys } from '../../lib/date.js'
 import WeeklyReviewWizard from '../journal/WeeklyReviewWizard.jsx'
 import RewardBar from './RewardBar.jsx'
+import DdayStrip from './DdayStrip.jsx'
 import RoutineCard from './RoutineCard.jsx'
 import OverdueTodos from './OverdueTodos.jsx'
 import TodayEvents from './TodayEvents.jsx'
@@ -179,6 +180,9 @@ export default function TodayTab() {
           ›
         </button>
       </section>
+
+      {/* 디데이 띠 (날짜 바로 아래) — 중요한 날까지 며칠 남았는지 가로 스크롤 */}
+      <DdayStrip />
 
       {/* 게임화 보상 카드 (오늘 볼 때만) — 레벨·XP·오늘 클리어 게이지·스트릭 */}
       {isToday && (
