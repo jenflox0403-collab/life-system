@@ -1,5 +1,5 @@
 import { todayKey } from '../../lib/date.js'
-import { eventType, eventColor } from '../../lib/eventTypes.js'
+import { eventType, eventColor, uploadKindLabel } from '../../lib/eventTypes.js'
 
 // "2026-07-07" → "7/7"
 function shortDate(key) {
@@ -36,6 +36,7 @@ export default function EventList({ events, selected, journalText, onEditEvent, 
         <ul className="flex flex-col gap-1.5">
           {visible.map((event) => {
             const type = eventType(event.type)
+            const kind = event.type === 'upload' ? uploadKindLabel(event.uploadKind) : ''
             return (
               <li key={event.id}>
                 <button
@@ -47,7 +48,10 @@ export default function EventList({ events, selected, journalText, onEditEvent, 
                   <div className="min-w-0 flex-1">
                     <span className="truncate text-[15px] font-medium">{event.title}</span>
                     <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs">
-                      <span style={{ color: eventColor(event.type) }}>{type.label}</span>
+                      <span style={{ color: eventColor(event.type) }}>
+                        {type.label}
+                        {kind && ` · ${kind}`}
+                      </span>
                       {event.memo && <span className="truncate text-[var(--color-muted)]">{event.memo}</span>}
                     </div>
                   </div>

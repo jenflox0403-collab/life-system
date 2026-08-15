@@ -12,6 +12,21 @@ export const EVENT_TYPES = [
   { id: 'etc', label: '기타', color: 'var(--evt-etc)' },
 ]
 
+// 업로드 유형 안의 세부 종류 (플랫폼/형식) — 색은 안 늘리고 글자 라벨로만 구분
+export const UPLOAD_KINDS = [
+  { id: 'ig_feed', label: '인스타 피드' },
+  { id: 'yt_post', label: '유튜브 게시물' },
+  { id: 'ig_story', label: '인스타 스토리' },
+  { id: 'yt_shorts', label: '유튜브 쇼츠' },
+  { id: 'ig_reels', label: '인스타 릴스' },
+  { id: 'reels_shorts', label: '릴스 & 쇼츠 동시' },
+]
+
+/** 세부 종류 id → 라벨 (없으면 빈 문자열) */
+export function uploadKindLabel(id) {
+  return UPLOAD_KINDS.find((k) => k.id === id)?.label ?? ''
+}
+
 /** 유형 id로 정의 객체 찾기 (없으면 개인일정으로 처리) */
 export function eventType(id) {
   return EVENT_TYPES.find((t) => t.id === id) ?? EVENT_TYPES.find((t) => t.id === 'personal') ?? EVENT_TYPES[0]

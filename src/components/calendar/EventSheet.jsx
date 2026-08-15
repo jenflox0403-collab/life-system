@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { EVENT_TYPES } from '../../lib/eventTypes.js'
+import { EVENT_TYPES, UPLOAD_KINDS, eventColor } from '../../lib/eventTypes.js'
 import { todayKey } from '../../lib/date.js'
 
 // 이 파일은 일정 추가/수정 창(모달) 담당
@@ -10,12 +10,14 @@ export default function EventSheet({ event, defaultDate, onSave, onDelete, onClo
   const [title, setTitle] = useState(event?.title ?? '')
   const [date, setDate] = useState(event?.date ?? defaultDate ?? todayKey())
   const [type, setType] = useState(event?.type ?? 'personal')
+  const [uploadKind, setUploadKind] = useState(event?.uploadKind ?? '')
   const [memo, setMemo] = useState(event?.memo ?? '')
 
   function handleSubmit(e) {
     e.preventDefault()
     if (!title.trim()) return
-    onSave({ title: title.trim(), date, type, memo: memo.trim() })
+    // 세부 종류는 업로드일 때만 저장 (다른 유형이면 비워둠)
+    onSave({ title: title.trim(), date, type, uploadKind: type === 'upload' ? uploadKind : '', memo: memo.trim() })
   }
 
   return (
@@ -71,6 +73,33 @@ export default function EventSheet({ event, defaultDate, onSave, onDelete, onClo
             })}
           </div>
         </div>
+
+        {/* 업로드 세부 종류 (업로드를 골랐을 때만) */}
+        {type === 'upload' && (
+          <div className="mb-3">
+            <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">업로드 세부 종류</span>
+            <div className="flex flex-wrap gap-1.5">
+              {UPLOAD_KINDS.map((k) => {
+                const active = k.id === uploadKind
+                return (
+                  <button
+                    key={k.id}
+                    type="button"
+                    onClick={() => setUploadKind(active ? '' : k.id)}
+                    className="chip"
+                    style={
+                      active
+                        ? { borderColor: eventColor('upload'), background: 'rgba(0,0,0,0.03)', color: 'var(--color-text)' }
+                        : {}
+                    }
+                  >
+                    {k.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* 메모 */}
         <label className="mb-5 block">
