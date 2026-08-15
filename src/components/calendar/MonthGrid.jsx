@@ -23,7 +23,8 @@ export default function MonthGrid({ year, monthIndex, events, selected, onSelect
   }
 
   return (
-    <section className="sao-card p-4">
+    // 카드의 빈 공간(여백·요일헤더·빈 칸)을 누르면 선택 해제
+    <section className="sao-card p-4" onClick={() => onSelectDay(null)}>
       {/* 월 이동 헤더 */}
       <div className="mb-3 flex items-center justify-between">
         <button onClick={() => onChangeMonth(-1)} aria-label="이전 달" className="sao-circle !h-8 !w-8 transition active:scale-90">
@@ -59,17 +60,34 @@ export default function MonthGrid({ year, monthIndex, events, selected, onSelect
             <button
               key={cell.key}
               type="button"
-              onClick={() => onSelectDay(isSelected ? null : cell.key)}
+              onClick={(e) => {
+                e.stopPropagation() // 날짜 클릭은 카드 배경의 "선택 해제"로 번지지 않게
+                onSelectDay(isSelected ? null : cell.key)
+              }}
               onDoubleClick={() => handleDoubleClick(cell.key)}
-              className={`flex aspect-square flex-col items-center justify-start gap-0.5 rounded-md pt-1 text-[12px] transition md:aspect-auto md:min-h-[92px] md:items-stretch md:p-1.5 ${
-                isSelected
-                  ? 'bg-[var(--color-accent)] text-white'
-                  : isToday
-                    ? 'ring-2 ring-[var(--color-accent)]'
-                    : 'hover:bg-black/[0.04]'
-              } ${!isSelected && weekday === 0 ? 'text-[var(--color-danger)]' : ''}`}
+              className={`relative flex aspect-square flex-col items-center justify-start gap-0.5 overflow-hidden rounded-md pt-1 text-[12px] transition md:aspect-auto md:min-h-[92px] md:items-stretch md:p-1.5 ${
+                isToday ? 'ring-2 ring-inset ring-[var(--color-accent)]' : 'hover:bg-black/[0.04]'
+              } ${weekday === 0 ? 'text-[var(--color-danger)]' : ''}`}
             >
-              <span className={`md:self-start md:px-0.5 ${isToday && !isSelected ? 'font-bold' : ''}`}>{cell.day}</span>
+              {/* 선택 표시: 오른쪽 위 모서리만 파랑 (칸 전체를 칠하지 않음) */}
+              {isSelected && (
+                <span
+                  className="pointer-events-none absolute right-0 top-0"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderTop: '14px solid var(--color-accent)',
+                    borderLeft: '14px solid transparent',
+                  }}
+                />
+              )}
+
+              <span
+                className={`md:self-start md:px-0.5 ${isToday || isSelected ? 'font-bold' : ''}`}
+                style={isSelected ? { color: 'var(--color-accent)' } : undefined}
+              >
+                {cell.day}
+              </span>
 
               {/* 모바일: 색 점 */}
               <span className="flex h-1.5 items-center gap-0.5 md:hidden">
@@ -77,13 +95,11 @@ export default function MonthGrid({ year, monthIndex, events, selected, onSelect
                   <span
                     key={event.id}
                     className="h-1.5 w-1.5 rounded-full"
-                    style={{ background: isSelected ? 'rgba(255,255,255,0.9)' : eventColor(event.type) }}
+                    style={{ background: eventColor(event.type) }}
                   />
                 ))}
                 {dayEvents.length > MAX_DOTS && (
-                  <span className={`text-[8px] leading-none ${isSelected ? 'text-white' : 'text-[var(--color-muted)]'}`}>
-                    +{dayEvents.length - MAX_DOTS}
-                  </span>
+                  <span className="text-[8px] leading-none text-[var(--color-muted)]">+{dayEvents.length - MAX_DOTS}</span>
                 )}
               </span>
 
@@ -93,20 +109,14 @@ export default function MonthGrid({ year, monthIndex, events, selected, onSelect
                   <span
                     key={event.id}
                     className="truncate rounded-[3px] px-1 py-px text-left text-[11px] leading-tight"
-                    style={
-                      isSelected
-                        ? { background: 'rgba(255,255,255,0.22)', color: '#fff' }
-                        : { borderLeft: `3px solid ${eventColor(event.type)}`, background: 'rgba(0,0,0,0.03)' }
-                    }
+                    style={{ borderLeft: `3px solid ${eventColor(event.type)}`, background: 'rgba(0,0,0,0.03)' }}
                     title={event.title}
                   >
                     {event.title}
                   </span>
                 ))}
                 {dayEvents.length > MAX_LINES && (
-                  <span className={`px-1 text-left text-[10px] ${isSelected ? 'text-white' : 'text-[var(--color-muted)]'}`}>
-                    +{dayEvents.length - MAX_LINES}건
-                  </span>
+                  <span className="px-1 text-left text-[10px] text-[var(--color-muted)]">+{dayEvents.length - MAX_LINES}건</span>
                 )}
               </span>
             </button>

@@ -3,6 +3,7 @@
 
 export const EVENT_TYPES = [
   { id: 'ad', label: '광고건', color: 'var(--evt-ad)' },
+  { id: 'upload', label: '업로드', color: 'var(--evt-upload)' },
   { id: 'plan', label: '기획안', color: 'var(--evt-plan)' },
   { id: 'meeting', label: '미팅', color: 'var(--evt-meeting)' },
   { id: 'personal', label: '개인일정', color: 'var(--evt-personal)' },
@@ -13,7 +14,7 @@ export const EVENT_TYPES = [
 
 /** 유형 id로 정의 객체 찾기 (없으면 개인일정으로 처리) */
 export function eventType(id) {
-  return EVENT_TYPES.find((t) => t.id === id) ?? EVENT_TYPES[3]
+  return EVENT_TYPES.find((t) => t.id === id) ?? EVENT_TYPES.find((t) => t.id === 'personal') ?? EVENT_TYPES[0]
 }
 
 /** 유형 id → 색 */

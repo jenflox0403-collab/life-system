@@ -24,6 +24,7 @@
 
   /* 달력 일정 유형 색 */
   --evt-ad: #e5544e; /* 광고건 (빨강) */
+  --evt-upload: #3aa655; /* 업로드 (초록) */
   --evt-plan: #ef9a3d; /* 기획안 (주황) */
   --evt-meeting: #4cc38a; /* 미팅 (초록) */
   --evt-personal: #e3c34a; /* 개인일정 (노랑) */
