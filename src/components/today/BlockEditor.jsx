@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { CATEGORIES, minutesToLabel } from '../../lib/categories.js'
+import { BLOCK_PALETTE, BLOCK_TEXT, blockColor, minutesToLabel } from '../../lib/categories.js'
 
 // 이 파일은 타임블록 만들기/수정 창 담당 (아래에서 올라오는 시트)
 export default function BlockEditor({ initial, dayStart, dayEnd, todos = [], events = [], onSave, onDelete, onClose }) {
   const [title, setTitle] = useState(initial.title ?? '')
-  const [category, setCategory] = useState(initial.category ?? 'work')
+  const [color, setColor] = useState(initial.color ?? blockColor(initial))
   const [start, setStart] = useState(initial.start)
   const [end, setEnd] = useState(initial.end)
   const [todoId, setTodoId] = useState(initial.todoId)
@@ -29,8 +29,8 @@ export default function BlockEditor({ initial, dayStart, dayEnd, todos = [], eve
     if (end <= start) return
     onSave({
       ...initial,
-      title: title.trim() || CATEGORIES.find((c) => c.id === category)?.label,
-      category,
+      title: title.trim() || '블록',
+      color,
       start,
       end,
       todoId,
@@ -84,19 +84,31 @@ export default function BlockEditor({ initial, dayStart, dayEnd, todos = [], eve
           </div>
         )}
 
-        <div className="mb-3 flex flex-wrap gap-2">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setCategory(cat.id)}
-              className={`rounded-full border px-3 py-1.5 text-sm transition ${
-                category === cat.id ? 'font-bold text-white' : 'border-black/10 text-[var(--color-muted)]'
-              }`}
-              style={category === cat.id ? { background: cat.color, borderColor: cat.color } : {}}
-            >
-              {cat.label}
-            </button>
-          ))}
+        {/* 색깔 고르기 (파스텔 10색) */}
+        <div className="mb-3">
+          <p className="mb-1.5 text-xs text-[var(--color-muted)]">색깔</p>
+          <div className="flex flex-wrap gap-2">
+            {BLOCK_PALETTE.map((p) => {
+              const active = color === p.color
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setColor(p.color)}
+                  aria-label={`${p.id} 색`}
+                  aria-pressed={active}
+                  className="flex size-8 items-center justify-center rounded-full text-sm font-bold transition"
+                  style={{
+                    background: p.color,
+                    color: BLOCK_TEXT,
+                    border: active ? '2px solid var(--color-heading)' : '1px solid rgba(0,0,0,0.12)',
+                  }}
+                >
+                  {active ? '✓' : ''}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         <div className="mb-5 flex items-center gap-2">

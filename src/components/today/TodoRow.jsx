@@ -14,6 +14,11 @@ export default function TodoRow({
   onRename, // 있으면 "수정" 버튼 표시 (내용 고치기)
   onRemove,
   showDate = false,
+  onHandleDown, // 있으면 왼쪽에 순서이동 손잡이(⠿) 표시
+  onHandleMove,
+  onHandleUp,
+  registerRef, // 부모가 줄 높이를 재기 위한 ref 등록 콜백
+  dragging = false,
 }) {
   const [expanded, setExpanded] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -55,14 +60,31 @@ export default function TodoRow({
 
   return (
     <li
-      ref={rowRef}
-      className="rounded-[5px] border border-black/[0.07] bg-white px-3 py-2"
+      ref={(el) => {
+        rowRef.current = el
+        registerRef?.(todo.id, el)
+      }}
+      className={`rounded-[5px] border border-black/[0.07] bg-white px-3 py-2 ${dragging ? 'relative z-10 opacity-70 shadow-lg' : ''}`}
       style={{ borderLeft: `3px solid ${stripe}` }}
     >
       <div
         className="flex cursor-pointer items-center gap-2.5"
         onClick={() => setExpanded((v) => !v)}
       >
+        {onHandleDown && (
+          <button
+            type="button"
+            aria-label="순서 이동 손잡이"
+            onPointerDown={onHandleDown}
+            onPointerMove={onHandleMove}
+            onPointerUp={onHandleUp}
+            onClick={(e) => e.stopPropagation()}
+            className="-ml-1 shrink-0 cursor-grab touch-none px-0.5 text-black/25 active:cursor-grabbing"
+            style={{ touchAction: 'none' }}
+          >
+            ⠿
+          </button>
+        )}
         <input
           type="checkbox"
           checked={todo.done}

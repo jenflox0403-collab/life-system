@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { categoryColor, minutesToLabel } from '../../lib/categories.js'
+import { blockColor, BLOCK_TEXT, minutesToLabel } from '../../lib/categories.js'
 
 const ROW_H = 40 // 한 시간 행의 높이(px)
 
@@ -104,12 +104,13 @@ export default function TimeblockSection({
                   <div
                     key={block.id}
                     onClick={() => onEditBlock(block)}
-                    className="absolute inset-y-0 flex cursor-pointer items-center gap-1 overflow-hidden px-1.5 text-white"
+                    className="absolute inset-y-0 flex cursor-pointer items-center gap-1 overflow-hidden px-1.5"
                     style={{
                       left: `${left * 100}%`,
                       width: `${width * 100}%`,
-                      background: categoryColor(block.category),
-                      opacity: block.done ? 0.4 : 0.92,
+                      background: blockColor(block),
+                      color: BLOCK_TEXT,
+                      opacity: block.done ? 0.5 : 1,
                     }}
                   >
                     {isHead && (
@@ -120,9 +121,10 @@ export default function TimeblockSection({
                             onToggleDone(block.id)
                           }}
                           aria-label="완료 체크"
-                          className={`flex size-4.5 shrink-0 items-center justify-center rounded-full border-2 border-white/90 text-[10px] font-bold leading-none ${
-                            block.done ? 'bg-white text-black/60' : 'bg-transparent'
+                          className={`flex size-4.5 shrink-0 items-center justify-center rounded-full border-2 text-[10px] font-bold leading-none ${
+                            block.done ? 'bg-black/55 text-white' : 'bg-transparent'
                           }`}
+                          style={{ borderColor: block.done ? 'transparent' : 'rgba(0,0,0,0.4)' }}
                         >
                           {block.done ? '✓' : ''}
                         </button>
