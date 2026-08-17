@@ -1,18 +1,18 @@
 // 이 파일은 타임블록 색 팔레트 + 시간 라벨 담당
 // (예전 "카테고리(업무/콘텐츠…)" 개념은 없앰 — 이제 원하는 파스텔 색을 직접 고름)
 
-// 파스텔 10색 — 밝아서 어두운 글자가 잘 보임
+// 파스텔 10색 — 아주 연한 톤 (어두운 글자가 잘 보임)
 export const BLOCK_PALETTE = [
-  { id: 'rose', color: '#ffd6d9' },
-  { id: 'peach', color: '#ffe1c4' },
-  { id: 'butter', color: '#fbecb6' },
-  { id: 'lime', color: '#dcf0bd' },
-  { id: 'mint', color: '#c4ecdc' },
-  { id: 'sky', color: '#c6e6f5' },
-  { id: 'blue', color: '#cfd9fb' },
-  { id: 'lavender', color: '#e2d4fb' },
-  { id: 'pink', color: '#f6d3ee' },
-  { id: 'greige', color: '#e7e2d5' },
+  { id: 'rose', color: '#ffe6e8' },
+  { id: 'peach', color: '#ffeedd' },
+  { id: 'butter', color: '#fdf5cf' },
+  { id: 'lime', color: '#eaf6d8' },
+  { id: 'mint', color: '#dcf3ea' },
+  { id: 'sky', color: '#ddeff8' },
+  { id: 'blue', color: '#e5ebfc' },
+  { id: 'lavender', color: '#efe7fc' },
+  { id: 'pink', color: '#fbe7f6' },
+  { id: 'greige', color: '#f1eee4' },
 ]
 
 // 파스텔 위에 얹는 글자색 (테마 무관 고정, 밝은 배경용 진한 갈색)
@@ -20,13 +20,13 @@ export const BLOCK_TEXT = '#4a4436'
 
 // 예전 카테고리로 만든 블록도 색이 비지 않게 파스텔로 매핑
 const LEGACY_CAT = {
-  work: '#c6e6f5',
-  content: '#f6d3ee',
-  study: '#cfd9fb',
-  exercise: '#dcf0bd',
-  faith: '#e2d4fb',
-  personal: '#ffe1c4',
-  buffer: '#e7e2d5',
+  work: '#ddeff8',
+  content: '#fbe7f6',
+  study: '#e5ebfc',
+  exercise: '#eaf6d8',
+  faith: '#efe7fc',
+  personal: '#ffeedd',
+  buffer: '#f1eee4',
 }
 
 /** 블록의 표시 색: 직접 고른 색 → (옛 블록)카테고리 매핑 → 기본 파스텔 */

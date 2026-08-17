@@ -13,13 +13,13 @@ const FIELDS = [
   { key: 'memo', label: '메모' },
 ]
 
-/** 오늘이 속한 주(일~토) 7일의 날짜 키 배열 */
+/** 오늘이 속한 주(일~토) + 다음주 일요일까지 8일의 날짜 키 배열 */
 function weekDates(today) {
   const [y, m, d] = today.split('-').map(Number)
   const base = new Date(y, m - 1, d)
   const sunday = new Date(base)
   sunday.setDate(base.getDate() - base.getDay()) // 일요일로 이동 (getDay: 일=0)
-  return Array.from({ length: 7 }, (_, i) => {
+  return Array.from({ length: 8 }, (_, i) => {
     const dd = new Date(sunday)
     dd.setDate(sunday.getDate() + i)
     return todayKey(dd)
@@ -78,14 +78,17 @@ export default function WeekPlanCard() {
           {dates.map((key, i) => {
             const day = dayOf(key)
             const isToday = key === today
+            const isNext = i === 7 // 다음주 일요일
             return (
               <button
                 key={key}
                 onClick={() => setEditKey(key)}
-                className="flex gap-3 rounded-xl border p-2.5 text-left transition active:scale-[0.99]"
+                className={`flex gap-3 rounded-xl border p-2.5 text-left transition active:scale-[0.99] ${isNext ? 'mt-1.5' : ''}`}
                 style={{
                   borderColor: isToday ? 'var(--color-accent)' : 'rgba(0,0,0,0.08)',
                   background: isToday ? 'color-mix(in srgb, var(--color-accent) 8%, transparent)' : 'transparent',
+                  borderTopWidth: isNext ? 2 : 1,
+                  borderStyle: isNext ? 'dashed' : 'solid',
                 }}
               >
                 <div className="flex w-8 shrink-0 flex-col items-center pt-0.5">
@@ -93,9 +96,10 @@ export default function WeekPlanCard() {
                     className="text-sm font-extrabold"
                     style={{ color: isToday ? 'var(--color-accent)' : 'var(--color-heading)' }}
                   >
-                    {DAY_LABELS[i]}
+                    {DAY_LABELS[i % 7]}
                   </span>
                   <span className="text-[10px] text-[var(--color-muted)]">{shortDate(key)}</span>
+                  {isNext && <span className="text-[9px] font-bold text-[var(--color-accent)]">다음주</span>}
                 </div>
 
                 <div className="min-w-0 flex-1 text-[13px] leading-relaxed">
@@ -122,7 +126,7 @@ export default function WeekPlanCard() {
       {editKey && (
         <DayEditor
           dateKey={editKey}
-          dayLabel={DAY_LABELS[dates.indexOf(editKey)]}
+          dayLabel={DAY_LABELS[dates.indexOf(editKey) % 7]}
           initial={dayOf(editKey)}
           onSave={(data) => saveDay(editKey, data)}
           onClose={() => setEditKey(null)}
@@ -139,14 +143,14 @@ function DayEditor({ dateKey, dayLabel, initial, onSave, onClose }) {
   const [memo, setMemo] = useState(initial.memo ?? '')
 
   const rows = [
-    { label: '업로드 계획', value: upload, set: setUpload, placeholder: '이 날 올릴 영상 제목/주제' },
-    { label: '제작 계획', value: make, set: setMake, placeholder: '촬영·편집 등 만들 것' },
-    { label: '메모', value: memo, set: setMemo, placeholder: '시간·기타 메모' },
+    { label: '업로드 계획', value: upload, set: setUpload, placeholder: '이 날 올릴 영상 제목/주제', lines: 2 },
+    { label: '제작 계획', value: make, set: setMake, placeholder: '촬영·편집 등 만들 것', lines: 2 },
+    { label: '메모 · 대본', value: memo, set: setMemo, placeholder: '여기에 대본을 길게 적어요', lines: 10 },
   ]
 
   return (
     <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-5" onClick={onClose}>
-      <div className="sao-modal w-full max-w-sm p-6" onClick={(e) => e.stopPropagation()}>
+      <div className="sao-modal flex max-h-[88vh] w-full max-w-sm flex-col overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
         <h3 className="sao-title mb-4 text-lg font-bold">
           {dayLabel}요일 · {shortDate(dateKey)}
         </h3>
@@ -158,8 +162,8 @@ function DayEditor({ dateKey, dayLabel, initial, onSave, onClose }) {
               value={r.value}
               onChange={(e) => r.set(e.target.value)}
               placeholder={r.placeholder}
-              rows={2}
-              className="mt-1 w-full resize-none rounded-xl border border-black/10 bg-[var(--color-surface)] px-3 py-2 text-sm font-normal text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]"
+              rows={r.lines}
+              className="mt-1 w-full resize-y rounded-xl border border-black/10 bg-[var(--color-surface)] px-3 py-2 text-sm font-normal leading-relaxed text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]"
             />
           </label>
         ))}

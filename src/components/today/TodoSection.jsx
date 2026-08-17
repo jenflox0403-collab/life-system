@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { uid } from '../../lib/uid.js'
 import TodoRow from './TodoRow.jsx'
 
@@ -6,53 +6,76 @@ import TodoRow from './TodoRow.jsx'
 export default function TodoSection({ todos, onChange, onSendToTimeblock, onDefer }) {
   const [text, setText] = useState('')
   const [dragId, setDragId] = useState(null)
-  const rowRefs = useRef({}) // id → 줄 DOM (높이 재서 위치 계산)
+  const [dragOrder, setDragOrder] = useState(null) // 드래그 중 로컬 순서 (부모까지 안 올려 렉 방지)
+  const rowRefs = useRef({}) // id → 줄 DOM
+  const posRef = useRef({}) // id → 직전 세로 위치 (부드러운 이동 애니메이션용)
   const dragRef = useRef(null)
+
+  // 드래그 중엔 로컬 순서로 그림 → 손을 떼야 부모(onChange)에 반영
+  const list = dragOrder ?? todos
 
   function registerRef(id, el) {
     if (el) rowRefs.current[id] = el
     else delete rowRefs.current[id]
   }
 
-  // 손잡이를 끌면 포인터 y위치로 놓일 자리를 계산해 즉시 순서 바꿈
-  function reorderTo(clientY) {
-    const d = dragRef.current
-    if (!d) return
-    const ids = todos.map((t) => t.id)
-    let target = todos.length - 1
-    for (let i = 0; i < ids.length; i += 1) {
-      const el = rowRefs.current[ids[i]]
+  // 순서가 바뀌면 각 줄을 이전 위치 → 새 위치로 스르륵 이동 (FLIP 기법)
+  useLayoutEffect(() => {
+    for (const t of list) {
+      const el = rowRefs.current[t.id]
       if (!el) continue
-      const r = el.getBoundingClientRect()
-      if (clientY < r.top + r.height / 2) {
-        target = i
-        break
+      const top = el.offsetTop
+      const prev = posRef.current[t.id]
+      if (prev != null && prev !== top) {
+        el.style.transition = 'none'
+        el.style.transform = `translateY(${prev - top}px)`
+        requestAnimationFrame(() => {
+          el.style.transition = 'transform 170ms ease'
+          el.style.transform = ''
+        })
       }
+      posRef.current[t.id] = top
     }
-    const from = todos.findIndex((t) => t.id === d.id)
-    if (from === -1 || from === target) return
-    const next = [...todos]
-    const [moved] = next.splice(from, 1)
-    next.splice(target, 0, moved)
-    onChange(next)
-  }
+  })
 
   function handleDown(event, id) {
     dragRef.current = { id, pointerId: event.pointerId }
     event.currentTarget.setPointerCapture(event.pointerId)
     setDragId(id)
+    setDragOrder(todos)
   }
 
   function handleMove(event) {
     const d = dragRef.current
     if (!d || event.pointerId !== d.pointerId) return
-    reorderTo(event.clientY)
+    const clientY = event.clientY
+    setDragOrder((prev) => {
+      const cur = prev ?? todos
+      let target = cur.length - 1
+      for (let i = 0; i < cur.length; i += 1) {
+        const el = rowRefs.current[cur[i].id]
+        if (!el) continue
+        const r = el.getBoundingClientRect()
+        if (clientY < r.top + r.height / 2) {
+          target = i
+          break
+        }
+      }
+      const from = cur.findIndex((t) => t.id === d.id)
+      if (from === -1 || from === target) return prev
+      const next = [...cur]
+      const [moved] = next.splice(from, 1)
+      next.splice(target, 0, moved)
+      return next
+    })
   }
 
   function handleUp(event) {
     const d = dragRef.current
     if (!d || event.pointerId !== d.pointerId) return
     dragRef.current = null
+    if (dragOrder) onChange(dragOrder) // 최종 순서만 저장
+    setDragOrder(null)
     setDragId(null)
   }
 
@@ -92,7 +115,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock, onDefe
       )}
 
       <ul className="flex flex-col gap-1.5">
-        {todos.map((todo) => (
+        {list.map((todo) => (
           <TodoRow
             key={todo.id}
             todo={todo}
