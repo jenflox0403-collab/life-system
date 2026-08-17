@@ -7,6 +7,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock, onDefe
   const [text, setText] = useState('')
   const [dragId, setDragId] = useState(null)
   const [dragOrder, setDragOrder] = useState(null) // 드래그 중 로컬 순서 (부모까지 안 올려 렉 방지)
+  const listRef = useRef(null) // <ul> — 위치 기준점
   const rowRefs = useRef({}) // id → 줄 DOM
   const posRef = useRef({}) // id → 직전 세로 위치 (부드러운 이동 애니메이션용)
   const dragRef = useRef(null)
@@ -20,17 +21,21 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock, onDefe
   }
 
   // 순서가 바뀌면 각 줄을 이전 위치 → 새 위치로 스르륵 이동 (FLIP 기법)
+  // 끌고 있는 줄은 애니메이션 없이(손가락 따라) 바로 자리 잡음
   useLayoutEffect(() => {
     for (const t of list) {
       const el = rowRefs.current[t.id]
       if (!el) continue
-      const top = el.offsetTop
+      const top = el.offsetTop // 변형(transform)과 무관한 실제 배치 위치
       const prev = posRef.current[t.id]
-      if (prev != null && prev !== top) {
+      if (t.id === dragId) {
+        el.style.transition = 'none'
+        el.style.transform = ''
+      } else if (prev != null && prev !== top) {
         el.style.transition = 'none'
         el.style.transform = `translateY(${prev - top}px)`
         requestAnimationFrame(() => {
-          el.style.transition = 'transform 170ms ease'
+          el.style.transition = 'transform 160ms ease'
           el.style.transform = ''
         })
       }
@@ -49,23 +54,30 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock, onDefe
     const d = dragRef.current
     if (!d || event.pointerId !== d.pointerId) return
     const clientY = event.clientY
+    const ul = listRef.current
+    if (!ul) return
+    // ul은 변형이 없어 기준점이 안정적 — 각 줄 위치는 offsetTop으로(애니메이션 영향 없음)
+    const ulTop = ul.getBoundingClientRect().top
     setDragOrder((prev) => {
       const cur = prev ?? todos
-      let target = cur.length - 1
-      for (let i = 0; i < cur.length; i += 1) {
-        const el = rowRefs.current[cur[i].id]
+      const dragged = cur.find((t) => t.id === d.id)
+      if (!dragged) return prev
+      // 끌고 있는 줄을 뺀 나머지 줄들 사이의 어느 자리에 넣을지 계산 (off-by-one 방지)
+      const others = cur.filter((t) => t.id !== d.id)
+      let target = others.length
+      for (let i = 0; i < others.length; i += 1) {
+        const el = rowRefs.current[others[i].id]
         if (!el) continue
-        const r = el.getBoundingClientRect()
-        if (clientY < r.top + r.height / 2) {
+        const mid = ulTop + el.offsetTop + el.offsetHeight / 2
+        if (clientY < mid) {
           target = i
           break
         }
       }
-      const from = cur.findIndex((t) => t.id === d.id)
-      if (from === -1 || from === target) return prev
-      const next = [...cur]
-      const [moved] = next.splice(from, 1)
-      next.splice(target, 0, moved)
+      const next = [...others]
+      next.splice(target, 0, dragged)
+      // 순서가 그대로면 갱신 안 함 (불필요한 리렌더·흔들림 방지)
+      if (next.every((t, idx) => t.id === cur[idx].id)) return prev
       return next
     })
   }
@@ -114,7 +126,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock, onDefe
         <p className="py-4 text-center text-sm text-[var(--color-muted)]">오늘 할 일을 추가해보세요!</p>
       )}
 
-      <ul className="flex flex-col gap-1.5">
+      <ul ref={listRef} className="relative flex flex-col gap-1.5">
         {list.map((todo) => (
           <TodoRow
             key={todo.id}
