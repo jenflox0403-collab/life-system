@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { uid } from '../../lib/uid.js'
 import { todayKey } from '../../lib/date.js'
 import TodoRow from '../today/TodoRow.jsx'
-import EisenhowerMatrix from './EisenhowerMatrix.jsx'
 import WeekCalendar from './WeekCalendar.jsx'
 
 // 이 파일은 계획 탭 > 주간 화면 담당 (주간 목표 + 이번 주 달력 + 매트릭스 + To-Do 전체)
@@ -76,8 +75,6 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
           setTodoDate(key)
         }}
       />
-
-      <EisenhowerMatrix todos={todos} todayKey={todayKey()} onSendToday={(id) => patchTodo(id, { date: todayKey() })} />
 
       {/* To-Do 목록 (선택한 날 또는 전체) */}
       <section className="sao-card p-5">

@@ -129,7 +129,6 @@ export default function WeekPlanCard() {
           dayLabel={DAY_LABELS[dates.indexOf(editKey) % 7]}
           initial={dayOf(editKey)}
           onSave={(data) => saveDay(editKey, data)}
-          onClose={() => setEditKey(null)}
         />
       )}
     </section>
@@ -137,7 +136,7 @@ export default function WeekPlanCard() {
 }
 
 // 요일 하나의 업로드·제작·메모 편집 창
-function DayEditor({ dateKey, dayLabel, initial, onSave, onClose }) {
+function DayEditor({ dateKey, dayLabel, initial, onSave }) {
   const [upload, setUpload] = useState(initial.upload ?? '')
   const [make, setMake] = useState(initial.make ?? '')
   const [memo, setMemo] = useState(initial.memo ?? '')
@@ -148,8 +147,11 @@ function DayEditor({ dateKey, dayLabel, initial, onSave, onClose }) {
     { label: '메모 · 대본', value: memo, set: setMemo, placeholder: '여기에 대본을 길게 적어요', lines: 10 },
   ]
 
+  // 닫는 모든 경로(바깥 탭·닫기)에서 자동 저장 → 대본이 날아가지 않게
+  const saveAndClose = () => onSave({ upload, make, memo })
+
   return (
-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-5" onClick={onClose}>
+    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 p-5" onClick={saveAndClose}>
       <div className="sao-modal flex max-h-[88vh] w-full max-w-sm flex-col overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
         <h3 className="sao-title mb-4 text-lg font-bold">
           {dayLabel}요일 · {shortDate(dateKey)}
@@ -168,14 +170,11 @@ function DayEditor({ dateKey, dayLabel, initial, onSave, onClose }) {
           </label>
         ))}
 
-        <button
-          onClick={() => onSave({ upload, make, memo })}
-          className="sao-btn-primary mt-2 w-full py-3"
-        >
+        <button onClick={saveAndClose} className="sao-btn-primary mt-2 w-full py-3">
           저장
         </button>
-        <button onClick={onClose} className="mt-2 w-full py-2 text-sm text-[var(--color-muted)]">
-          닫기
+        <button onClick={saveAndClose} className="mt-2 w-full py-2 text-sm text-[var(--color-muted)]">
+          닫기 (자동 저장)
         </button>
       </div>
     </div>

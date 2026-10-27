@@ -167,7 +167,7 @@ export default function TimerTab() {
             <span className="ml-1 text-sm font-bold text-[var(--color-amber-deep)]">{sessions}세션 ✦</span>
           </div>
         )}
-        <p className="mt-2 text-xs text-[var(--color-muted)]">집중 4세션마다 긴 휴식을 제안해요 · 세션당 +15 XP</p>
+        <p className="mt-2 text-xs text-[var(--color-muted)]">집중 4세션마다 긴 휴식을 제안해요</p>
       </section>
 
       {/* 시간 설정 */}

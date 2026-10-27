@@ -3,7 +3,7 @@ import { uid } from '../../lib/uid.js'
 import { useStoredState } from '../../hooks/useStoredState.js'
 import { todayKey, formatKorean, weekKey, weekDateKeys } from '../../lib/date.js'
 import WeeklyReviewWizard from '../journal/WeeklyReviewWizard.jsx'
-import RewardBar from './RewardBar.jsx'
+import EisenhowerMatrix from '../plan/EisenhowerMatrix.jsx'
 import DdayStrip from './DdayStrip.jsx'
 import WeekPlanCard from './WeekPlanCard.jsx'
 import RoutineCard from './RoutineCard.jsx'
@@ -46,10 +46,6 @@ export default function TodayTab() {
   const [allBlocks, setAllBlocks] = useStoredState('timeblocks', {})
   const [events, setEvents] = useStoredState('events', []) // 달력과 공유 (여기서 추가·수정 가능)
   const [diary, setDiary] = useStoredState('diary', {})
-  const [habitLog] = useStoredState('habitLog', {}) // 보상 카드 XP 계산용 (읽기 전용)
-  const [pomodoroLog] = useStoredState('pomodoroLog', {}) // 포모도로 세션 XP용 (읽기 전용)
-  const [goals] = useStoredState('goals', {}) // 오늘의 한 마디용 (읽기 전용)
-  const [sosData] = useStoredState('sos', {}) // 앵커·버텨낸 기록 (읽기 전용)
   const [settings] = useStoredState('settings', {})
   const [weeklyReviews, setWeeklyReviews] = useStoredState('weeklyReviews', {})
   const [editorState, setEditorState] = useState(null)
@@ -185,21 +181,6 @@ export default function TodayTab() {
       {/* 디데이 띠 (날짜 바로 아래) — 중요한 날까지 며칠 남았는지 가로 스크롤 */}
       <DdayStrip />
 
-      {/* 게임화 보상 카드 (오늘 볼 때만) — 레벨·XP·오늘 클리어 게이지·스트릭 */}
-      {isToday && (
-        <RewardBar
-          todos={allTodos}
-          routineLog={routineLog}
-          timeblocks={allBlocks}
-          habitLog={habitLog}
-          diary={diary}
-          pomodoroLog={pomodoroLog}
-          surviveLog={sosData.surviveLog ?? {}}
-          goals={goals}
-          sos={sosData}
-        />
-      )}
-
       {/* 이번 주 영상 계획 (접었다 펴는 카드) — 일~토 업로드/제작/메모 */}
       <WeekPlanCard />
 
@@ -248,6 +229,9 @@ export default function TodayTab() {
         onSendToTimeblock={sendTodoToTimeblock}
         onDefer={deferTodo}
       />
+
+      {/* 아이젠하워 매트릭스 — 위 할 일의 중요·긴급을 4분면으로 즉시 반영 */}
+      <EisenhowerMatrix todos={dayTodos} />
 
       <TimeblockSection
         blocks={dayBlocks}

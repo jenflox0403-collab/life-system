@@ -1,7 +1,6 @@
-import { weekDateKeys } from '../../lib/date.js'
-
 // 이 파일은 아이젠하워 매트릭스 시각화(사분면 그래프) 담당
-// 가로축=긴급도, 세로축=중요도. 이번 주 To-Do를 4칸에 칩으로 배치.
+// 가로축=긴급도, 세로축=중요도. 전달받은 할 일(완료 안 한 것)을 4칸에 칩으로 배치.
+// 오늘 탭에서 오늘 할 일을 넘겨주면, 할 일을 쓰고 중요·긴급을 켜는 즉시 여기에 반영됨.
 const CELLS = [
   { key: 'q2', match: (t) => t.important && !t.urgent, label: '중요·안급함', sub: '계획해서', color: '#4a9bc9' },
   { key: 'q1', match: (t) => t.important && t.urgent, label: '중요·긴급', sub: '지금 바로', color: '#c9536e' },
@@ -9,14 +8,13 @@ const CELLS = [
   { key: 'q3', match: (t) => !t.important && t.urgent, label: '안중요·긴급', sub: '빠르게', color: '#e3a93c' },
 ]
 
-export default function EisenhowerMatrix({ todos, onSendToday, todayKey }) {
-  const weekKeys = new Set(weekDateKeys())
-  const active = todos.filter((todo) => !todo.done && weekKeys.has(todo.date))
+export default function EisenhowerMatrix({ todos }) {
+  const active = todos.filter((todo) => !todo.done)
 
   return (
     <section className="sao-card p-5">
       <h3 className="sao-title mb-1 font-bold">아이젠하워 매트릭스</h3>
-      <p className="mb-3 text-xs text-[var(--color-muted)]">이번 주 To-Do를 4분면으로 · 중요·긴급은 오늘로 보내세요</p>
+      <p className="mb-3 text-xs text-[var(--color-muted)]">오늘 할 일을 4분면으로 · 할 일에 중요·긴급을 켜면 자동 반영돼요</p>
 
       <div className="flex">
         {/* 세로축 라벨 */}
@@ -43,16 +41,14 @@ export default function EisenhowerMatrix({ todos, onSendToday, todayKey }) {
                   <div className="flex flex-wrap gap-1">
                     {items.length === 0 && <span className="text-[11px] text-[var(--color-muted)]">—</span>}
                     {items.map((todo) => (
-                      <button
+                      <span
                         key={todo.id}
-                        onClick={() => cell.key === 'q1' && todo.date !== todayKey && onSendToday(todo.id)}
-                        title={cell.key === 'q1' ? '오늘로 보내기' : todo.text}
+                        title={todo.text}
                         className="max-w-full truncate rounded bg-white px-1.5 py-0.5 text-[11px] font-medium shadow-sm"
-                        style={{ border: `1px solid ${cell.color}44` }}
+                        style={{ border: `1px solid ${cell.color}44`, color: '#413d34' }}
                       >
                         {todo.text}
-                        {cell.key === 'q1' && todo.date !== todayKey && ' →'}
-                      </button>
+                      </span>
                     ))}
                   </div>
                 </div>
