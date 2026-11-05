@@ -136,20 +136,20 @@ export default function App() {
       </header>
 
       {twoPane ? (
-        // ── 2분할: 각 칸 독립 스크롤 ──
-        <div className="flex min-h-0 flex-1 gap-4 px-4 pt-3">
-          <section className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-black/10">
-            <div className="shrink-0 border-b border-black/10 bg-white/60 px-4 py-2 text-sm font-bold text-[var(--color-heading)]">
+        // ── 2분할: 테두리 박스 없이 가운데 구분선만 · 각 칸 독립 스크롤 ──
+        <div className="flex min-h-0 flex-1">
+          <section className="flex min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="shrink-0 px-5 pt-3 pb-1 text-xs font-bold text-[var(--color-muted)]">
               {current.label}
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 pb-28">
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-28">
               <Screen key={`left-${screenEpoch}`} />
             </div>
           </section>
 
-          <section className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-black/10">
-            <div className="flex shrink-0 items-center gap-2 border-b border-black/10 bg-white/60 px-4 py-2">
-              <span className="text-xs font-bold text-[var(--color-muted)]">오른쪽 화면</span>
+          <section className="flex min-w-0 flex-1 flex-col overflow-hidden border-l border-black/10">
+            <div className="flex shrink-0 items-center gap-2 px-5 pt-3 pb-1">
+              <span className="text-xs font-bold text-[var(--color-muted)]">오른쪽</span>
               <select
                 value={rightTab}
                 onChange={(e) => setRightTab(e.target.value)}
@@ -162,7 +162,7 @@ export default function App() {
                 ))}
               </select>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 pb-28">
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-28">
               <RightScreen key={`right-${screenEpoch}-${rightTab}`} />
             </div>
           </section>
