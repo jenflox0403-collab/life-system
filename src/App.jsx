@@ -15,6 +15,7 @@ import MiniTimer from './components/timer/MiniTimer.jsx'
 import PomodoroWatcher from './components/timer/PomodoroWatcher.jsx'
 import NotificationWatcher from './components/notify/NotificationWatcher.jsx'
 import SyncWatcher from './components/sync/SyncWatcher.jsx'
+import { load, save } from './lib/storage.js'
 import {
   IconToday,
   IconPlan,
@@ -26,7 +27,7 @@ import {
   IconSettings,
 } from './components/ui/icons.jsx'
 
-// 이 파일은 앱의 뼈대 담당 — 상단 헤더 + 화면 전환 + 하단 탭바
+// 이 파일은 앱의 뼈대 담당 — 상단 헤더 + 화면 전환 + 하단 탭바 (+ 넓은 화면 2분할)
 const TABS = [
   { id: 'today', label: '오늘', en: 'Today', Icon: IconToday, screen: TodayTab },
   { id: 'plan', label: '계획', en: 'Plan', Icon: IconPlan, screen: PlanTab },
@@ -37,22 +38,54 @@ const TABS = [
   { id: 'timer', label: '타이머', en: 'Timer', Icon: IconTimer, screen: TimerTab },
 ]
 
+const WIDE_MIN = 1100 // 이 폭 이상일 때만 2분할 가능
+
+// 화면이 넓은지 추적 (창 크기 바뀌면 자동 갱신)
+function useWide(minWidth) {
+  const [wide, setWide] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(`(min-width:${minWidth}px)`).matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia(`(min-width:${minWidth}px)`)
+    const onChange = () => setWide(mq.matches)
+    onChange()
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [minWidth])
+  return wide
+}
+
 export default function App() {
+  const savedSplit = load('uiSplit', {}) // 동기화·백업엔 안 섞이는 화면 설정
   const [activeTab, setActiveTab] = useState('today')
+  const [splitOn, setSplitOn] = useState(!!savedSplit.on)
+  const [rightTab, setRightTab] = useState(
+    savedSplit.right && TABS.some((t) => t.id === savedSplit.right) ? savedSplit.right : 'calendar',
+  )
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSosOpen, setIsSosOpen] = useState(false)
   const [isVerseOpen, setIsVerseOpen] = useState(false)
   // SOS에서 할 일을 추가했을 수 있으니, 닫힐 때 화면을 다시 마운트해 최신 데이터 로드
   const [screenEpoch, setScreenEpoch] = useState(0)
 
+  const wide = useWide(WIDE_MIN)
+  const twoPane = wide && splitOn // 넓은 화면 + 2분할 켜짐일 때만 두 칸
+
   const current = TABS.find((tab) => tab.id === activeTab)
   const Screen = current.screen
+  const rightObj = TABS.find((tab) => tab.id === rightTab) ?? TABS[3]
+  const RightScreen = rightObj.screen
+
+  // 2분할 설정 기억 (localStorage, 동기화 대상 아님)
+  useEffect(() => {
+    save('uiSplit', { on: splitOn, right: rightTab })
+  }, [splitOn, rightTab])
 
   // 팝업(SOS·설정)이 열려 있으면 숫자키 단축키를 막기 위한 최신 상태 참조
   const overlayRef = useRef(false)
   overlayRef.current = isSosOpen || isSettingsOpen
 
-  // PC 단축키: 숫자 1~7 → 탭 이동 (입력 중·팝업·조합키일 땐 무시)
+  // PC 단축키: 숫자 1~7 → (왼쪽) 탭 이동 (입력 중·팝업·조합키일 땐 무시)
   useEffect(() => {
     function handleKey(event) {
       if (overlayRef.current) return
@@ -67,21 +100,78 @@ export default function App() {
   }, [])
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/10 bg-white/80 px-5 py-3.5 shadow-[0_2px_12px_rgba(60,75,90,0.08)] backdrop-blur">
-        <h1 className="sao-title text-xl font-bold tracking-tight text-[var(--color-heading)]">{current.label}</h1>
-        <button
-          onClick={() => setIsSettingsOpen(true)}
-          aria-label="설정 및 백업"
-          className="sao-circle !h-9 !w-9 transition hover:brightness-95 active:scale-95"
-        >
-          <IconSettings width={18} height={18} />
-        </button>
+    <div
+      className={`mx-auto flex w-full flex-col ${
+        twoPane ? 'h-dvh max-w-[1700px] overflow-hidden' : 'min-h-dvh max-w-5xl'
+      }`}
+    >
+      <header className="sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-black/10 bg-white/80 px-5 py-3.5 shadow-[0_2px_12px_rgba(60,75,90,0.08)] backdrop-blur">
+        <h1 className="sao-title truncate text-xl font-bold tracking-tight text-[var(--color-heading)]">
+          {twoPane ? `${current.label} · ${rightObj.label}` : current.label}
+        </h1>
+        <div className="flex shrink-0 items-center gap-2">
+          {/* 2분할 토글 — 넓은 화면에서만 노출 */}
+          {wide && (
+            <button
+              onClick={() => setSplitOn((v) => !v)}
+              aria-pressed={splitOn}
+              className="rounded-full border px-3 py-1.5 text-xs font-bold transition"
+              style={
+                splitOn
+                  ? { background: 'var(--color-accent)', borderColor: 'var(--color-accent)', color: '#fff' }
+                  : { borderColor: 'rgba(0,0,0,0.15)', color: 'var(--color-muted)' }
+              }
+            >
+              2분할
+            </button>
+          )}
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            aria-label="설정 및 백업"
+            className="sao-circle !h-9 !w-9 transition hover:brightness-95 active:scale-95"
+          >
+            <IconSettings width={18} height={18} />
+          </button>
+        </div>
       </header>
 
-      <main className="flex-1 px-5 py-5 pb-28 sm:px-6">
-        <Screen key={screenEpoch} />
-      </main>
+      {twoPane ? (
+        // ── 2분할: 각 칸 독립 스크롤 ──
+        <div className="flex min-h-0 flex-1 gap-4 px-4 pt-3">
+          <section className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-black/10">
+            <div className="shrink-0 border-b border-black/10 bg-white/60 px-4 py-2 text-sm font-bold text-[var(--color-heading)]">
+              {current.label}
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 pb-28">
+              <Screen key={`left-${screenEpoch}`} />
+            </div>
+          </section>
+
+          <section className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-black/10">
+            <div className="flex shrink-0 items-center gap-2 border-b border-black/10 bg-white/60 px-4 py-2">
+              <span className="text-xs font-bold text-[var(--color-muted)]">오른쪽 화면</span>
+              <select
+                value={rightTab}
+                onChange={(e) => setRightTab(e.target.value)}
+                className="ml-auto rounded-lg border border-black/15 bg-[var(--color-surface)] px-2 py-1 text-sm font-bold text-[var(--color-heading)] outline-none"
+              >
+                {TABS.map((tab) => (
+                  <option key={tab.id} value={tab.id}>
+                    {tab.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 pb-28">
+              <RightScreen key={`right-${screenEpoch}-${rightTab}`} />
+            </div>
+          </section>
+        </div>
+      ) : (
+        <main className="flex-1 px-5 py-5 pb-28 sm:px-6">
+          <Screen key={screenEpoch} />
+        </main>
+      )}
 
       <nav
         aria-label="주요 탭"
