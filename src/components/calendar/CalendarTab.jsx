@@ -53,6 +53,7 @@ export default function CalendarTab() {
         events={events}
         selected={selectedDay}
         onSelectDay={setSelectedDay}
+        onEditEvent={(event) => setEditing(event)}
         onChangeMonth={changeMonth}
         onQuickAdd={(key) => {
           setSelectedDay(key)

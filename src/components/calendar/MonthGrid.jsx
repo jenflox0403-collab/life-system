@@ -8,7 +8,7 @@ const MAX_LINES = 3 // 데스크톱 한 칸 최대 텍스트 줄 (넘치면 +N)
 // 이 파일은 월간 달력 그리드 담당
 // 모바일: 날짜 + 일정 색 점 / 데스크톱: 날짜 + 일정 제목 텍스트
 // 더블클릭(PC 전용)하면 그날 일정추가 팝업이 바로 뜸
-export default function MonthGrid({ year, monthIndex, events, selected, onSelectDay, onChangeMonth, onQuickAdd }) {
+export default function MonthGrid({ year, monthIndex, events, selected, onSelectDay, onEditEvent, onChangeMonth, onQuickAdd }) {
   const cells = monthGridCells(year, monthIndex)
   const today = todayKey()
 
@@ -108,9 +108,15 @@ export default function MonthGrid({ year, monthIndex, events, selected, onSelect
                 {dayEvents.slice(0, MAX_LINES).map((event) => (
                   <span
                     key={event.id}
-                    className="truncate rounded-[3px] px-1 py-px text-left text-[11px] leading-tight"
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation() // 날짜 선택이 아니라 이 일정 수정
+                      onEditEvent?.(event)
+                    }}
+                    className="cursor-pointer truncate rounded-[3px] px-1 py-px text-left text-[11px] leading-tight transition hover:brightness-95"
                     style={{ borderLeft: `3px solid ${eventColor(event.type)}`, background: 'rgba(0,0,0,0.03)' }}
-                    title={event.title}
+                    title={`${event.title} · 클릭하면 수정`}
                   >
                     {event.title}
                   </span>

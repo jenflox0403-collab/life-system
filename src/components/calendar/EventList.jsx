@@ -33,6 +33,8 @@ export default function EventList({ events, selected, journalText, onEditEvent, 
           {selected ? '이 날 일정이 없어요' : '다가오는 일정이 없어요'}
         </p>
       ) : (
+        <>
+        <p className="mb-2 text-xs text-[var(--color-muted)]">일정을 탭하면 수정·삭제할 수 있어요</p>
         <ul className="flex flex-col gap-1.5">
           {visible.map((event) => {
             const type = eventType(event.type)
@@ -56,11 +58,15 @@ export default function EventList({ events, selected, journalText, onEditEvent, 
                     </div>
                   </div>
                   <span className="shrink-0 text-xs text-[var(--color-muted)]">{shortDate(event.date)}</span>
+                  <span className="shrink-0 rounded-full border border-black/10 px-2 py-0.5 text-[11px] font-bold text-[var(--color-muted)]">
+                    수정
+                  </span>
                 </button>
               </li>
             )
           })}
         </ul>
+        </>
       )}
 
       {/* 선택한 날의 일기 (읽기 전용) */}
