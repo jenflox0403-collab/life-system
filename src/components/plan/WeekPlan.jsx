@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { uid } from '../../lib/uid.js'
 import { todayKey } from '../../lib/date.js'
+import { useListReorder } from '../../hooks/useListReorder.js'
 import TodoRow from '../today/TodoRow.jsx'
 import WeekCalendar from './WeekCalendar.jsx'
 
@@ -29,6 +30,21 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
   function patchTodo(id, changes) {
     onChangeTodos(todos.map((todo) => (todo.id === id ? { ...todo, ...changes } : todo)))
   }
+
+  // 보이는 할 일: 선택한 날(없으면 전체) · 날짜순(같은 날은 배열 순서 유지 — 드래그 반영용)
+  const visible = todos
+    .filter((todo) => selectedDay === null || todo.date === selectedDay)
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
+
+  // 순서 바꾸면: 보이는 것들을 새 순서로, 나머지 날짜 할 일은 그대로 두고 합침
+  function commitReorder(newOrder) {
+    const ids = new Set(newOrder.map((t) => t.id))
+    const others = todos.filter((t) => !ids.has(t.id))
+    onChangeTodos([...others, ...newOrder])
+  }
+
+  const { list, listRef, registerRef, dragId, handleProps } = useListReorder(visible, commitReorder)
+  const canReorder = selectedDay !== null // 특정 날짜를 볼 때만 손잡이로 순서 이동
 
   return (
     <div className="flex flex-col gap-4">
@@ -109,31 +125,28 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
           </div>
         </form>
 
-        {(() => {
-          const visible = todos
-            .filter((todo) => selectedDay === null || todo.date === selectedDay)
-            .sort((a, b) => (a.date < b.date ? -1 : 1))
-          if (visible.length === 0) {
-            return <p className="py-2 text-sm text-[var(--color-muted)]">이 날 할 일이 없어요</p>
-          }
-          return (
-            <ul className="flex flex-col gap-1.5">
-              {visible.map((todo) => (
-                <TodoRow
-                  key={todo.id}
-                  todo={todo}
-                  showDate
-                  onToggleDone={() => patchTodo(todo.id, { done: !todo.done })}
-                  onToggleUrgent={() => patchTodo(todo.id, { urgent: !todo.urgent })}
-                  onToggleImportant={() => patchTodo(todo.id, { important: !todo.important })}
-                  onRename={(text) => patchTodo(todo.id, { text })}
-                  onSetMemo={(memo) => patchTodo(todo.id, { memo })}
-                  onRemove={() => onChangeTodos(todos.filter((t) => t.id !== todo.id))}
-                />
-              ))}
-            </ul>
-          )
-        })()}
+        {visible.length === 0 ? (
+          <p className="py-2 text-sm text-[var(--color-muted)]">이 날 할 일이 없어요</p>
+        ) : (
+          <ul ref={listRef} className="relative flex flex-col gap-1.5">
+            {list.map((todo) => (
+              <TodoRow
+                key={todo.id}
+                todo={todo}
+                showDate
+                onToggleDone={() => patchTodo(todo.id, { done: !todo.done })}
+                onToggleUrgent={() => patchTodo(todo.id, { urgent: !todo.urgent })}
+                onToggleImportant={() => patchTodo(todo.id, { important: !todo.important })}
+                onRename={(text) => patchTodo(todo.id, { text })}
+                onSetMemo={(memo) => patchTodo(todo.id, { memo })}
+                onRemove={() => onChangeTodos(todos.filter((t) => t.id !== todo.id))}
+                registerRef={registerRef}
+                dragging={dragId === todo.id}
+                {...(canReorder ? handleProps(todo.id) : {})}
+              />
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   )
