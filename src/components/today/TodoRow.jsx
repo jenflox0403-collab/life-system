@@ -12,6 +12,7 @@ export default function TodoRow({
   onDefer, // 있으면 "연기" 버튼 표시
   onSendToBlock, // 있으면 "블록" 버튼 표시
   onRename, // 있으면 "수정" 버튼 표시 (내용 고치기)
+  onSetMemo, // 있으면 "메모" 버튼 표시 (할 일에 메모 달기)
   onRemove,
   showDate = false,
   onHandleDown, // 있으면 왼쪽에 순서이동 손잡이(⠿) 표시
@@ -23,6 +24,8 @@ export default function TodoRow({
   const [expanded, setExpanded] = useState(false)
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(todo.text)
+  const [memoEditing, setMemoEditing] = useState(false)
+  const [memoDraft, setMemoDraft] = useState(todo.memo ?? '')
   const rowRef = useRef(null)
 
   // 수정 내용 저장 (빈 값·변화 없으면 그냥 닫기)
@@ -36,6 +39,19 @@ export default function TodoRow({
     setDraft(todo.text)
     setEditing(true)
     setExpanded(false)
+  }
+
+  function startMemo() {
+    if (!onSetMemo) return
+    setMemoDraft(todo.memo ?? '')
+    setMemoEditing(true)
+    setExpanded(false)
+  }
+
+  // 메모 저장 (바깥 눌러도 자동 저장돼 날아가지 않음)
+  function commitMemo() {
+    onSetMemo?.(memoDraft.trim())
+    setMemoEditing(false)
   }
 
   // 펼쳐진 상태에서 바깥 아무 곳이나 누르면 닫힘
@@ -152,6 +168,53 @@ export default function TodoRow({
         )}
       </div>
 
+      {/* 메모: 쓰는 중이면 입력창, 있으면 할 일 밑에 작게 표시 */}
+      {memoEditing ? (
+        <div className="mt-1.5 pl-[26px]">
+          <textarea
+            value={memoDraft}
+            autoFocus
+            onChange={(e) => setMemoDraft(e.target.value)}
+            onBlur={commitMemo}
+            rows={2}
+            placeholder="메모 입력 (상세 내용·대본 등)"
+            className="w-full resize-y rounded-[5px] border border-[var(--color-accent)] px-2 py-1.5 text-sm leading-relaxed outline-none"
+          />
+          <div className="mt-1 flex items-center gap-3">
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={commitMemo}
+              className="text-xs font-bold text-[var(--color-accent)]"
+            >
+              저장
+            </button>
+            {todo.memo && (
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  onSetMemo?.('')
+                  setMemoEditing(false)
+                }}
+                className="text-xs text-[var(--color-muted)]"
+              >
+                메모 삭제
+              </button>
+            )}
+          </div>
+        </div>
+      ) : (
+        todo.memo && (
+          <p
+            onClick={startMemo}
+            className={`mt-1 whitespace-pre-wrap break-words pl-[26px] text-xs text-[var(--color-muted)] ${onSetMemo ? 'cursor-pointer' : ''}`}
+          >
+            {todo.memo}
+          </p>
+        )
+      )}
+
       {expanded && (
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5 pl-[26px]">
           <button
@@ -170,6 +233,9 @@ export default function TodoRow({
           </button>
           {onRename && (
             <button onClick={startEdit} className="chip">수정</button>
+          )}
+          {onSetMemo && (
+            <button onClick={startMemo} className="chip">{todo.memo ? '메모 수정' : '메모'}</button>
           )}
           {onDefer && !todo.done && (
             <button onClick={onDefer} className="chip">연기</button>

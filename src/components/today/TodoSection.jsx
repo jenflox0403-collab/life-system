@@ -137,6 +137,7 @@ export default function TodoSection({ todos, onChange, onSendToTimeblock, onDefe
             onDefer={() => onDefer(todo)}
             onSendToBlock={() => onSendToTimeblock(todo)}
             onRename={(text) => patch(todo.id, { text })}
+            onSetMemo={(memo) => patch(todo.id, { memo })}
             onRemove={() => onChange(todos.filter((t) => t.id !== todo.id))}
             registerRef={registerRef}
             dragging={dragId === todo.id}
