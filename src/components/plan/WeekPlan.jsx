@@ -126,6 +126,7 @@ export default function WeekPlan({ weekGoals, onChangeWeekGoals, todos, onChange
                   onToggleDone={() => patchTodo(todo.id, { done: !todo.done })}
                   onToggleUrgent={() => patchTodo(todo.id, { urgent: !todo.urgent })}
                   onToggleImportant={() => patchTodo(todo.id, { important: !todo.important })}
+                  onRename={(text) => patchTodo(todo.id, { text })}
                   onRemove={() => onChangeTodos(todos.filter((t) => t.id !== todo.id))}
                 />
               ))}
